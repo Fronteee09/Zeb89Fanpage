@@ -11,22 +11,22 @@
     margin: 0;
     min-height: 100vh;
     font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
-    color: #0b2a4a;
+    color: #dbeafe;
     line-height: 1.6;
     overflow-x: hidden;
     background:
-      radial-gradient(circle at 20% 10%, rgba(255,255,255,.7), transparent 35%),
-      radial-gradient(circle at 85% 30%, rgba(160,225,255,.8), transparent 40%),
-      linear-gradient(160deg, #6ec6ff 0%, #2f8fe0 45%, #0b4f9c 100%);
+      radial-gradient(circle at 15% 8%, rgba(80,170,255,.35), transparent 38%),
+      radial-gradient(circle at 90% 35%, rgba(40,120,220,.35), transparent 42%),
+      linear-gradient(160deg, #0a1f3d 0%, #07152b 50%, #030a16 100%);
     background-attachment: fixed;
   }
   .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 18px; }
 
   .glass {
-    background: linear-gradient(180deg, rgba(255,255,255,.65), rgba(255,255,255,.3));
-    border: 1px solid rgba(255,255,255,.8);
+    background: linear-gradient(180deg, rgba(120,190,255,.22), rgba(20,50,95,.35));
+    border: 1px solid rgba(140,200,255,.45);
     border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(5,40,90,.35), inset 0 1px 0 rgba(255,255,255,.9);
+    box-shadow: 0 8px 28px rgba(0,0,0,.6), inset 0 1px 0 rgba(200,230,255,.5);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     padding: 20px;
@@ -39,9 +39,9 @@
     font-size: clamp(2rem, 9vw, 3.4rem);
     line-height: 1.1;
     color: #fff;
-    text-shadow: 0 2px 6px rgba(5,40,90,.7);
+    text-shadow: 0 0 14px rgba(90,180,255,.9), 0 2px 4px rgba(0,0,0,.8);
   }
-  header p { margin: 0 0 22px; color: #06305c; font-size: 1.1rem; }
+  header p { margin: 0 0 22px; color: #bcd9f7; font-size: 1.1rem; }
 
   .btn {
     display: inline-block;
@@ -50,8 +50,64 @@
     color: #fff;
     font-weight: 600;
     text-decoration: none;
-    text-shadow: 0 1px 2px rgba(0,40,90,.8);
-    border: 1px solid #0a4a8f;
+    text-shadow: 0 1px 2px rgba(0,20,60,.9);
+    border: 1px solid #6cc0ff;
     border-radius: 999px;
-    background: linear-gradient(180deg, #8fd6ff 0%, #3a9be8 50%, #1c78d0 51%, #4cb0f5 100%);
-    box-shadow: 0 4px
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
+    box-shadow: 0 0 16px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+  }
+  .btn:active { filter: brightness(.9); }
+  .btn:focus-visible, a:focus-visible { outline: 3px solid #8fd0ff; outline-offset: 2px; }
+  @media (max-width: 480px) { .btn { display: block; } }
+
+  h2 { margin: 0 0 10px; font-size: 1.35rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
+  p { margin: 0 0 10px; }
+
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .card {
+    background: rgba(5,20,45,.55);
+    border: 1px solid rgba(120,185,255,.35);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .card h3 { margin: 0 0 4px; font-size: 1.05rem; color: #fff; }
+  .card p { margin: 0; color: #bcd9f7; }
+
+  ul { margin: 0; padding-left: 1.2em; }
+  li { margin-bottom: 6px; }
+
+  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="glass">
+    <h1>Zeb89 Fanpage</h1>
+    <p>La community dei fan di Zeb89. Novità, regole e come unirti a noi.</p>
+    <a class="btn" href="https://www.reddit.com/r/Zeb89FanpageOfficial/" target="_blank" rel="noopener">Vieni su Reddit</a>
+  </header>
+
+  <section class="glass">
+    <h2>Chi siamo</h2>
+    <p>Siamo una fanpage gestita dai fan, per i fan. Condividiamo contenuti, idee e momenti divertenti.</p>
+  </section>
+
+  <section class="glass">
+    <h2>Dove ci trovi</h2>
+    <div class="grid">
+      <div class="card"><h3>Reddit</h3><p>Post quotidiani e discussioni.</p></div>
+      <div class="card"><h3>Discord</h3><p>Chat con la community.</p></div>
+    </div>
+  </section>
+
+  <section class="glass">
+    <h2>Regole</h2>
+    <ul>
+      <li>Rispetta tutti i membri.</li>
+      <li>Niente spam.</li>
+      <li>Pubblica solo contenuti legati alla fanpage.</li>
+    </ul>
+  </section>
+
+  <section
