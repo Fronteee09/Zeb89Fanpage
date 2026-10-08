@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Annunci e Post - Zeb89 Fanpage</title>
+<link rel="icon" href="logo.png">
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    color: #dbeafe;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(80,170,255,.35), transparent 38%),
+      radial-gradient(circle at 90% 35%, rgba(40,120,220,.35), transparent 42%),
+      linear-gradient(160deg, #0a1f3d 0%, #07152b 50%, #030a16 100%);
+    background-attachment: fixed;
+  }
+  .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 18px; }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(120,190,255,.22), rgba(20,50,95,.35));
+    border: 1px solid rgba(140,200,255,.45);
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.6), inset 0 1px 0 rgba(200,230,255,.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+
+  header.glass { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 20px 24px; }
+  
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-small {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid rgba(140,200,255,.7);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(90,180,255,.8);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 1px solid #6cc0ff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
+    box-shadow: 0 0 12px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+  }
+  .btn:active { filter: brightness(.9); }
+
+  h2 { margin: 0 0 10px; font-size: 1.35rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
+  p { margin: 0 0 10px; color: #bcd9f7; }
+
+  .post-card {
+    background: rgba(5,20,45,.65);
+    border: 1px solid rgba(120,185,255,.35);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .post-date { font-size: 0.85rem; color: #8fb4dc; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .author-tag { color: #5cc0ff; font-weight: 600; }
+  
+  .post-title { margin: 0 0 8px; font-size: 1.15rem; color: #fff; }
+  .post-content { margin: 0; color: #bcd9f7; font-size: 0.85rem; line-height: 1.4; opacity: 0.85; }
+
+  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="glass">
+    <div class="header-left">
+      <img class="logo-small" src="logo.png" alt="Logo">
+      <h1>Annunci & Post</h1>
+    </div>
+    <a class="btn" href="index.html">← Torna alla Home</a>
+  </header>
+
+  <section class="glass">
+    <h2>Ultime novità dalla Community</h2>
+    <p>Qui trovi gli annunci ufficiali, i post in evidenza e gli aggiornamenti direttamente dal subreddit e dai nostri canali.</p>
+  </section>
+
+  <!-- Post di Fronte ★ (Mod) -->
+  <div class="post-card">
+    <div class="post-date">
+      <span>📅 8 Ottobre 2026</span>
+      <span class="author-tag">Fronte ★ (Mod)</span>
+    </div>
+    <div class="post-title"><strong>zeb89 accenna di voler entrare in politica</strong></div>
+    <p class="post-content">La fanpage non sostiene alcuna affermazione o idea politica e non si assume la responsabilità di eventuali affermazioni fuori posto.</p>
+  </div>
+
+  <!-- Esempio di Post precedente -->
+  <div class="post-card">
+    <div class="post-date">
+      <span>📅 8 Ottobre 2026</span>
+      <span class="author-tag">Staff</span>
+    </div>
+    <h3 class="post-title" style="font-size: 1.1rem; margin: 0 0 6px; color: #fff;">Benvenuti sul nuovo sito della Fanpage!</h3>
+    <p style="margin: 0; color: #bcd9f7; font-size: 0.98rem;">Il sito ufficiale su GitHub è online e operativo. Continuate a seguire il subreddit <strong>r/Zeb89FanpageOfficial</strong> per non perdervi nessun meme o discussione fresca!</p>
+  </div>
+
+  <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
+
+</div>
+</body>
+</html>
