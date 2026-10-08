@@ -55,6 +55,13 @@
   }
   header p { margin: 0 0 22px; color: #bcd9f7; font-size: 1.1rem; }
 
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
   .btn {
     display: inline-block;
     min-height: 48px;
@@ -68,9 +75,15 @@
     background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
     box-shadow: 0 0 16px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
   }
+
+  .btn-secondary {
+    background: linear-gradient(180deg, rgba(80,140,200,0.5) 0%, rgba(20,50,90,0.7) 100%);
+    border: 1px solid rgba(140,200,255,0.4);
+    box-shadow: 0 0 12px rgba(80,170,255,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+
   .btn:active { filter: brightness(.9); }
   .btn:focus-visible, a:focus-visible { outline: 3px solid #8fd0ff; outline-offset: 2px; }
-  @media (max-width: 480px) { .btn { display: block; } }
 
   h2 { margin: 0 0 10px; font-size: 1.35rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
   p { margin: 0 0 10px; }
@@ -88,7 +101,7 @@
   ul { margin: 0; padding-left: 1.2em; }
   li { margin-bottom: 6px; }
 
-  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+  <footer> text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; </footer>
 </style>
 </head>
 <body>
@@ -98,7 +111,10 @@
     <img class="logo" src="logo.png" alt="Logo Zeb89 Fanpage">
     <h1>Zeb89 Fanpage</h1>
     <p>La community dei fan di Zeb89. Novità, regole e come unirti a noi.</p>
-    <a class="btn" href="https://www.reddit.com/r/Zeb89FanpageOfficial/" target="_blank" rel="noopener">Vieni su Reddit</a>
+    <div class="btn-group">
+      <a class="btn" href="https://www.reddit.com/r/Zeb89FanpageOfficial/" target="_blank" rel="noopener">Vieni su Reddit</a>
+      <a class="btn btn-secondary" href="annuncipost.html">Visualizza gli annunci/post</a>
+    </div>
   </header>
 
   <section class="glass">
