@@ -283,6 +283,40 @@
     </div>
   </div>
 
+  <!-- Post: Adoravo quei video in cui zeb89 andava in giro -->
+  <div class="post-card">
+    <div class="post-date">
+      <span>📅 6 Ottobre 2026</span>
+      <span class="author-tag">VagabondoDigital</span>
+    </div>
+    <div class="post-title"><strong>Adoravo quei video in cui zeb89 andava in giro</strong></div>
+    <img class="post-image" src="img/communitypost2.png" alt="Zeb89 in giro">
+    <p class="post-content">Quei vlog all'aperto erano leggendari, un mix unico di ironia e situazioni assurde.</p>
+    
+    <div class="post-footer">
+      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+      <button class="vote-btn" onclick="toggleLike(this)">
+        👍︎ <span class="count-up">29</span>
+      </button>
+    </div>
+
+    <div class="comments-section">
+      <div id="comment-list">
+        <div class="comment-item">
+          <img class="comment-avatar" src="img/smarco28.png" alt="Smarco28">
+          <div class="comment-body">
+            <h4>Smarco28</h4>
+            <p>E c'era gente che lo incontrava davvero per strada</p>
+          </div>
+        </div>
+      </div>
+      <div class="add-comment-box">
+        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
+        <button class="comment-submit" onclick="addComment(this)">Invia</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Altro Post di Esempio -->
   <div class="post-card">
     <div class="post-date">
@@ -382,5 +416,4 @@
 </script>
 
 </body>
-</html>
 </html>
