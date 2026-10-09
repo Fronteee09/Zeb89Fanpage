@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Community - Zeb89 Fanpage</title>
+<link rel="icon" href="logo.png">
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    color: #dbeafe;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(80,170,255,.35), transparent 38%),
+      radial-gradient(circle at 90% 35%, rgba(40,120,220,.35), transparent 42%),
+      linear-gradient(160deg, #0a1f3d 0%, #07152b 50%, #030a16 100%);
+    background-attachment: fixed;
+  }
+  .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 18px; }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(120,190,255,.22), rgba(20,50,95,.35));
+    border: 1px solid rgba(140,200,255,.45);
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.6), inset 0 1px 0 rgba(200,230,255,.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+
+  header.glass { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 20px 24px; }
+  
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-small {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid rgba(140,200,255,.7);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(90,180,255,.8);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 1px solid #6cc0ff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
+    box-shadow: 0 0 12px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+  }
+  .btn:active { filter: brightness(.9); }
+
+  h2 { margin: 0 0 10px; font-size: 1.35rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
+  p { margin: 0 0 10px; color: #bcd9f7; }
+
+  .post-card {
+    background: rgba(5,20,45,.65);
+    border: 1px solid rgba(120,185,255,.35);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .post-date { font-size: 0.85rem; color: #8fb4dc; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .author-tag { color: #5cc0ff; font-weight: 600; }
+  
+  .post-title { margin: 0 0 8px; font-size: 1.15rem; color: #fff; }
+  .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.85rem; line-height: 1.4; opacity: 0.85; }
+
+  .post-image {
+    width: 100%;
+    max-height: 350px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(120,185,255,.3);
+    margin-bottom: 12px;
+  }
+
+  .post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(120,185,255,.2);
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+
+  .vote-btn {
+    background: rgba(80,170,255,0.1);
+    border: 1px solid rgba(120,185,255,0.3);
+    color: #bcd9f7;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .vote-btn:hover {
+    background: rgba(80,170,255,0.25);
+    border-color: rgba(120,185,255,0.6);
+  }
+
+  .vote-btn.active {
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
+    color: #fff;
+    border-color: #8fd0ff;
+    box-shadow: 0 0 10px rgba(80,170,255,0.5);
+  }
+
+  .comment-toggle-btn {
+    background: transparent;
+    border: 1px solid rgba(120,185,255,0.3);
+    color: #8fb4dc;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.85srem;
+    transition: all 0.2s;
+  }
+  .comment-toggle-btn:hover {
+    background: rgba(80,170,255,0.15);
+    color: #fff;
+  }
+
+  /* Sezione Commenti */
+  .comments-section {
+    display: none;
+    margin-top: 14px;
+    border-top: 1px dashed rgba(120,185,255,0.3);
+    padding-top: 12px;
+  }
+  .comments-section.open {
+    display: block;
+  }
+
+  .comment-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    background: rgba(10,30,60,0.4);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(120,185,255,0.15);
+  }
+
+  .comment-avatar {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid rgba(140,200,255,0.5);
+    flex-shrink: 0;
+  }
+
+  .comment-body h4 {
+    margin: 0 0 2px;
+    font-size: 0.9rem;
+    color: #5cc0ff;
+  }
+
+  .comment-body p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #bcd9f7;
+  }
+
+  .add-comment-box {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .comment-input {
+    flex-grow: 1;
+    background: rgba(5,20,45,0.8);
+    border: 1px solid rgba(120,185,255,0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #fff;
+    font-size: 0.85rem;
+  }
+  .comment-input:focus {
+    outline: none;
+    border-color: #5cc0ff;
+  }
+
+  .comment-submit {
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
+    border: none;
+    color: #fff;
+    padding: 0 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="glass">
+    <div class="header-left">
+      <img class="logo-small" src="logo.png" alt="Logo">
+      <h1>Post della Community</h1>
+    </div>
+    <a class="btn" href="index.html">← Torna alla Home</a>
+  </header>
+
+  <section class="glass">
+    <h2>Spazio ai Fan</h2>
+    <p>Qui trovi i post, le clip e i pensieri condivisi direttamente dagli utenti della community.</p>
+  </section>
+
+  <!-- Post: Chi ricorda Zeb89Talks? -->
+  <div class="post-card">
+    <div class="post-date">
+      <span>📅 6 Ottobre 2026</span>
+      <span class="author-tag">RedditUser_42</span>
+    </div>
+    <div class="post-title"><strong>Chi ricorda Zeb89Talks?</strong></div>
+    <img class="post-image" src="communitypost1.png" alt="Zeb89Talks">
+    <p class="post-content">Discussione aperta sul vecchio format che spopolava sul subreddit e nelle live di quel periodo.</p>
+    
+    <div class="post-footer">
+      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+      <button class="vote-btn" onclick="toggleLike(this)">
+        👍︎ <span class="count-up">14</span>
+      </button>
+    </div>
+
+    <!-- Sezione Commenti -->
+    <div class="comments-section">
+      <div id="comment-list">
+        <!-- Commento di Fronte -->
+        <div class="comment-item">
+          <img class="comment-avatar" src="fronte.jpg" alt="Fronte">
+          <div class="comment-body">
+            <h4>Fronte ★</h4>
+            <p>Wow si lo ricordo. andava di moda nel periodo twitch 2021.</p>
+          </div>
+        </div>
+
+        <!-- Commento di BotVivo -->
+        <div class="comment-item">
+          <img class="comment-avatar" src="botvivo.png" alt="BotVivo">
+          <div class="comment-body">
+            <h4>BotVivo</h4>
+            <p>Merita di più</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Casella per aggiungere un commento -->
+      <div class="add-comment-box">
+        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
+        <button class="comment-submit" onclick="addComment(this)">Invia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Altro Post di Esempio -->
+  <div class="post-card">
+    <div class="post-date">
+      <span>📅 5 Ottobre 2026</span>
+      <span class="author-tag">MemeMaster_It</span>
+    </div>
+    <div class="post-title"><strong>"Eh! Volevi!" citazione leggendaria</strong></div>
+    <p class="post-content">Ogni volta che succede qualcosa inaspettato nella vita mi viene spontaneo dirlo. Ormai è un riflesso condizionato.</p>
+    
+    <div class="post-footer">
+      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+      <button class="vote-btn" onclick="toggleLike(this)">
+        👍︎ <span class="count-up">48</span>
+      </button>
+    </div>
+
+    <div class="comments-section">
+      <div id="comment-list">
+        <div class="comment-item">
+          <img class="comment-avatar" src="logo.png" alt="Fan">
+          <div class="comment-body">
+            <h4>Fedelissimo89</h4>
+            <p>Un tormentone che non invecchierà mai!</p>
+          </div>
+        </div>
+      </div>
+      <div class="add-comment-box">
+        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
+        <button class="comment-submit" onclick="addComment(this)">Invia</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
+
+</div>
+
+<script>
+  function toggleLike(button) {
+    const countSpan = button.querySelector('.count-up');
+    let currentCount = parseInt(countSpan.textContent);
+
+    if (button.classList.contains('active')) {
+      button.classList.remove('active');
+      currentCount -= 1;
+    } else {
+      button.classList.add('active');
+      currentCount += 1;
+    }
+    countSpan.textContent = currentCount;
+  }
+
+  function toggleComments(btn) {
+    const card = btn.closest('.post-card');
+    const section = card.querySelector('.comments-section');
+    section.classList.toggle('open');
+    if (section.classList.contains('open')) {
+      btn.textContent = '💬 Nascondi commenti';
+    } else {
+      btn.textContent = '💬 Mostra commenti';
+    }
+  }
+
+  function addComment(btn) {
+    const box = btn.closest('.add-comment-box');
+    const input = box.querySelector('.comment-input');
+    const text = input.value.trim();
+
+    if (text !== "") {
+      const card = btn.closest('.post-card');
+      const list = card.querySelector('#comment-list');
+
+      const newComment = document.createElement('div');
+      newComment.className = 'comment-item';
+      newComment.innerHTML = `
+        <img class="comment-avatar" src="logo.png" alt="Tu">
+        <div class="comment-body">
+          <h4>Ospite</h4>
+          <p>${escapeHtml(text)}</p>
+        </div>
+      `;
+      list.appendChild(newComment);
+      input.value = "";
+    }
+  }
+
+  function handleCommentInput(event, input) {
+    if (event.key === 'Enter') {
+      const btn = input.nextElementSibling;
+      addComment(btn);
+    }
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+</script>
+
+</body>
+</html>
