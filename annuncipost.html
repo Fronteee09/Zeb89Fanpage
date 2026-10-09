@@ -227,7 +227,7 @@
     <p>Qui raccogliamo gli annunci ufficiali, i comunicati e gli aggiornamenti importanti per la community.</p>
   </section>
 
-  <!-- Post 2 (del 8/10/2026) -->
+  <!-- Post 2: Partito Politico (8/10/2026) -->
   <div class="post-card">
     <div class="post-date">
       <span>📅 8 Ottobre 2026</span>
@@ -239,12 +239,12 @@
     <div class="post-footer">
       <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
       <button class="vote-btn" onclick="toggleLike(this)">
-        👍︎ <span class="count-up">42</span>
+        👍︎ <span class="count-up">25</span>
       </button>
     </div>
 
     <div class="comments-section">
-      <div id="comment-list">
+      <div class="comment-list">
         <div class="comment-item">
           <img class="comment-avatar" src="img/smarco28.png" alt="Smarco28">
           <div class="comment-body">
@@ -260,7 +260,7 @@
     </div>
   </div>
 
-  <!-- Post 1 (del 6/10/2026) -->
+  <!-- Post 1: Annuncio del sito (6/10/2026) -->
   <div class="post-card">
     <div class="post-date">
       <span>📅 6 Ottobre 2026</span>
@@ -272,12 +272,12 @@
     <div class="post-footer">
       <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
       <button class="vote-btn" onclick="toggleLike(this)">
-        👍︎ <span class="count-up">31</span>
+        👍︎ <span class="count-up">32</span>
       </button>
     </div>
 
     <div class="comments-section">
-      <div id="comment-list">
+      <div class="comment-list">
         <div class="comment-item">
           <img class="comment-avatar" src="botvivo.png" alt="BotVivo">
           <div class="comment-body">
@@ -321,3 +321,63 @@
 <script>
   function toggleLike(button) {
     const countSpan = button.querySelector('.count-up');
+    let currentCount = parseInt(countSpan.textContent);
+
+    if (button.classList.contains('active')) {
+      button.classList.remove('active');
+      currentCount -= 1;
+    } else {
+      button.classList.add('active');
+      currentCount += 1;
+    }
+    countSpan.textContent = currentCount;
+  }
+
+  function toggleComments(btn) {
+    const card = btn.closest('.post-card');
+    const section = card.querySelector('.comments-section');
+    section.classList.toggle('open');
+    if (section.classList.contains('open')) {
+      btn.textContent = '💬 Nascondi commenti';
+    } else {
+      btn.textContent = '💬 Mostra commenti';
+    }
+  }
+
+  function addComment(btn) {
+    const box = btn.closest('.add-comment-box');
+    const input = box.querySelector('.comment-input');
+    const text = input.value.trim();
+
+    if (text !== "") {
+      const card = btn.closest('.post-card');
+      const list = card.querySelector('.comment-list');
+
+      const newComment = document.createElement('div');
+      newComment.className = 'comment-item';
+      newComment.innerHTML = `
+        <img class="comment-avatar" src="albonz84.jpg" alt="Tu">
+        <div class="comment-body">
+          <h4>Tu</h4>
+          <p>${escapeHtml(text)}</p>
+        </div>
+      `;
+      list.appendChild(newComment);
+      input.value = "";
+    }
+  }
+
+  function handleCommentInput(event, input) {
+    if (event.key === 'Enter') {
+      const btn = input.nextElementSibling;
+      addComment(btn);
+    }
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+</script>
+
+</body>
+</html>
