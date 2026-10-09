@@ -1,1 +1,181 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fronte Bio - Zeb89 Fanpage</title>
+<link rel="icon" href="logo.png">
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    color: #dbeafe;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(80,170,255,.35), transparent 38%),
+      radial-gradient(circle at 90% 35%, rgba(40,120,220,.35), transparent 42%),
+      linear-gradient(160deg, #0a1f3d 0%, #07152b 50%, #030a16 100%);
+    background-attachment: fixed;
+  }
+  .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 18px; }
 
+  .glass {
+    background: linear-gradient(180deg, rgba(120,190,255,.22), rgba(20,50,95,.35));
+    border: 1px solid rgba(140,200,255,.45);
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.6), inset 0 1px 0 rgba(200,230,255,.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+
+  header.glass { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 20px 24px; }
+  
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-small {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid rgba(140,200,255,.7);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(90,180,255,.8);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 1px solid #6cc0ff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
+    box-shadow: 0 0 12px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+  }
+  .btn:active { filter: brightness(.9); }
+
+  /* Stile Profilo / Account */
+  .profile-card {
+    background: rgba(5,20,45,.75);
+    border: 1px solid rgba(120,185,255,.4);
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .profile-avatar {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid rgba(140,200,255,0.8);
+    box-shadow: 0 0 20px rgba(80,170,255,0.6);
+    margin-bottom: 16px;
+  }
+
+  .profile-name {
+    margin: 0 0 6px;
+    font-size: 1.8rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(90,180,255,0.8);
+  }
+
+  .profile-badges {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    background: rgba(80,170,255,0.2);
+    border: 1px solid rgba(120,185,255,0.4);
+    color: #5cc0ff;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .badge-dev {
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
+    color: #fff;
+    border-color: #8fd0ff;
+  }
+
+  .profile-joined {
+    font-size: 0.85rem;
+    color: #8fb4dc;
+    margin-bottom: 20px;
+  }
+
+  .profile-bio {
+    background: rgba(10,30,60,0.5);
+    border: 1px solid rgba(120,185,255,0.2);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+    color: #bcd9f7;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .profile-bio h3 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 1.1rem;
+  }
+
+  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="glass">
+    <div class="header-left">
+      <img class="logo-small" src="logo.png" alt="Logo Fanpage">
+      <h1>Profilo Utente</h1>
+    </div>
+    <a class="btn" href="staff.html">← Torna allo Staff</a>
+  </header>
+
+  <!-- Scheda Profilo Developer -->
+  <div class="profile-card">
+    <img class="profile-avatar" src="fronte.jpg" alt="Fronte">
+    <h2 class="profile-name">Fronte ★</h2>
+    
+    <div class="profile-badges">
+      <span class="badge badge-dev">Developer</span>
+      <span class="badge">Moderatore</span>
+    </div>
+
+    <div class="profile-joined">
+      📅 Utente dal 4/12/2025
+    </div>
+
+    <div class="profile-bio">
+      <h3>Biografia</h3>
+      <p>Fronte è un giovane programmatore che lavora nella comunità specialmente su reddit. È il proprietario del progetto delle carte di TeenagersITA.</p>
+    </div>
+  </div>
+
+  <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
+
+</div>
+</body>
+</html>
