@@ -66,6 +66,23 @@
   }
   .btn:active { filter: brightness(.9); }
 
+  /* Pulsante piccolo per il profilo */
+  .btn-sm {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid #6cc0ff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
+    box-shadow: 0 0 8px rgba(80,170,255,0.5);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .btn-sm:hover { filter: brightness(1.1); }
+
   h2 { margin: 0 0 10px; font-size: 1.35rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
   p { margin: 0 0 10px; color: #bcd9f7; }
 
@@ -94,6 +111,10 @@
     margin: 0 0 4px;
     font-size: 1.15rem;
     color: #fff;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
   }
 
   .staff-info p {
@@ -125,7 +146,7 @@
   <div class="staff-card">
     <img class="staff-avatar" src="fronte.jpg" alt="Fronte">
     <div class="staff-info">
-      <h3>Fronte ★</h3>
+      <h3>Fronte ★ <a class="btn-sm" href="frontebio.html">Visita account</a></h3>
       <p>Dev</p>
     </div>
   </div>
