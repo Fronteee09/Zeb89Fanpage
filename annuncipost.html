@@ -86,17 +86,36 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    gap: 10px;
     border-top: 1px solid rgba(120,185,255,.2);
-    padding-top: 8px;
+    padding-top: 10px;
   }
 
-  .like-count {
-    font-size: 0.85rem;
-    color: #8fb4dc;
+  .vote-btn {
     background: rgba(80,170,255,0.1);
-    padding: 4px 10px;
+    border: 1px solid rgba(120,185,255,0.3);
+    color: #bcd9f7;
+    padding: 6px 14px;
     border-radius: 999px;
-    border: 1px solid rgba(120,185,255,0.25);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .vote-btn:hover {
+    background: rgba(80,170,255,0.25);
+    border-color: rgba(120,185,255,0.6);
+  }
+
+  .vote-btn.active {
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
+    color: #fff;
+    border-color: #8fd0ff;
+    box-shadow: 0 0 10px rgba(80,170,255,0.5);
   }
 
   footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
@@ -127,25 +146,7 @@
     <div class="post-title"><strong>zeb89 accenna di voler entrare in politica</strong></div>
     <p class="post-content">La fanpage non sostiene alcuna affermazione o idea politica e non si assume la responsabilità di eventuali affermazioni fuori posto.</p>
     <div class="post-footer">
-      <span class="like-count">⭐ 17 like</span>
-    </div>
-  </div>
-
-  <!-- Post di annuncio del sito (1 ottobre) -->
-  <div class="post-card">
-    <div class="post-date">
-      <span>📅 1 Ottobre 2026</span>
-      <span class="author-tag">Staff</span>
-    </div>
-    <h3 class="post-title" style="font-size: 1.1rem; margin: 0 0 6px; color: #fff;">Benvenuti sul nuovo sito della Fanpage!</h3>
-    <p style="margin: 0 0 12px; color: #bcd9f7; font-size: 0.98rem;">Il sito ufficiale su GitHub è online e operativo. Continuate a seguire il subreddit <strong>r/Zeb89FanpageOfficial</strong> per non perdervi nessun meme o discussione fresca!</p>
-    <div class="post-footer">
-      <span class="like-count">⭐ 21 like</span>
-    </div>
-  </div>
-
-  <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
-
-</div>
-</body>
-</html>
+      <button class="vote-btn" onclick="vote(this, 'up')">
+        👍︎ <span class="count-up">17</span>
+      </button>
+      <button class="vote-btn" onclick="vote(
