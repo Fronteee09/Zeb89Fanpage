@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Community - Zeb89 Fanpage</title>
+<title>Annunci e Post - Zeb89 Fanpage</title>
 <link rel="icon" href="logo.png">
 <style>
   * { box-sizing: border-box; }
@@ -81,15 +81,6 @@
   
   .post-title { margin: 0 0 8px; font-size: 1.15rem; color: #fff; }
   .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.85rem; line-height: 1.4; opacity: 0.85; }
-
-  .post-image {
-    width: 100%;
-    max-height: 350px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid rgba(120,185,255,.3);
-    margin-bottom: 12px;
-  }
 
   .post-footer {
     display: flex;
@@ -225,121 +216,94 @@
 
   <header class="glass">
     <div class="header-left">
-      <img class="logo-small" src="community.png" alt="Logo Community">
-      <h1>Post della Community</h1>
+      <img class="logo-small" src="logo.png" alt="Logo Fanpage">
+      <h1>Annunci & Post</h1>
     </div>
     <a class="btn" href="index.html">← Torna alla Home</a>
   </header>
 
   <section class="glass">
-    <h2>Spazio ai Fan</h2>
-    <p>Qui trovi i post, le clip e i pensieri condivisi direttamente dagli utenti della community.</p>
+    <h2>Ultime novità dallo Staff</h2>
+    <p>Qui raccogliamo gli annunci ufficiali, i comunicati e gli aggiornamenti importanti per la community.</p>
   </section>
 
-  <!-- Post: Chi ricorda Zeb89Talks? -->
+  <!-- Post 2 (del 8/10/2026) -->
   <div class="post-card">
     <div class="post-date">
-      <span>📅 6 Ottobre 2026</span>
-      <span class="author-tag">RedditUser_42</span>
+      <span>📅 8 Ottobre 2026</span>
+      <span class="author-tag">Staff Ufficiale</span>
     </div>
-    <div class="post-title"><strong>Chi ricorda Zeb89Talks?</strong></div>
-    <img class="post-image" src="img/communitypost1.png" alt="Zeb89Talks">
-    <p class="post-content">Discussione aperta sul vecchio format che spopolava sul subreddit e nelle live di quel periodo.</p>
+    <div class="post-title"><strong>Zeb89 Annuncia il suo nuovo partito: Nuova Repubblica</strong></div>
+    <p class="post-content">Approfondimenti su reddit.</p>
     
     <div class="post-footer">
       <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
       <button class="vote-btn" onclick="toggleLike(this)">
-        👍︎ <span class="count-up">14</span>
+        👍︎ <span class="count-up">42</span>
       </button>
     </div>
 
-    <!-- Sezione Commenti -->
     <div class="comments-section">
       <div id="comment-list">
-        <!-- Commento di Fronte -->
         <div class="comment-item">
-          <img class="comment-avatar" src="fronte.jpg" alt="Fronte">
+          <img class="comment-avatar" src="img/smarco28.png" alt="Smarco28">
           <div class="comment-body">
-            <h4>Fronte ★</h4>
-            <p>Wow si lo ricordo. andava di moda nel periodo twitch 2021.</p>
+            <h4>Smarco28</h4>
+            <p>Zebbone presidente del consiglio?!</p>
           </div>
         </div>
+      </div>
+      <div class="add-comment-box">
+        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
+        <button class="comment-submit" onclick="addComment(this)">Invia</button>
+      </div>
+    </div>
+  </div>
 
-        <!-- Commento di BotVivo -->
+  <!-- Post 1 (del 6/10/2026) -->
+  <div class="post-card">
+    <div class="post-date">
+      <span>📅 6 Ottobre 2026</span>
+      <span class="author-tag">Staff Ufficiale</span>
+    </div>
+    <div class="post-title"><strong>La Zeb89Fanpage ha finalmente un sito funzionante e sicuro!</strong></div>
+    <p class="post-content">Dopo mesi di lavoro la Zeb89 Fanpage raggiunge uno dei traguardi più difficili! Creare un Hub solido e forte.</p>
+    
+    <div class="post-footer">
+      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+      <button class="vote-btn" onclick="toggleLike(this)">
+        👍︎ <span class="count-up">31</span>
+      </button>
+    </div>
+
+    <div class="comments-section">
+      <div id="comment-list">
         <div class="comment-item">
           <img class="comment-avatar" src="botvivo.png" alt="BotVivo">
           <div class="comment-body">
             <h4>BotVivo</h4>
-            <p>Merita di più</p>
+            <p>Congratulazioni a noi</p>
           </div>
         </div>
-      </div>
-
-      <!-- Casella per aggiungere un commento -->
-      <div class="add-comment-box">
-        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
-        <button class="comment-submit" onclick="addComment(this)">Invia</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Post: Adoravo quei video in cui zeb89 andava in giro -->
-  <div class="post-card">
-    <div class="post-date">
-      <span>📅 6 Ottobre 2026</span>
-      <span class="author-tag">VagabondoDigital</span>
-    </div>
-    <div class="post-title"><strong>adoravo quei video in cui zeb89 andava in giro</strong></div>
-    <img class="post-image" src="communitypost2.png" alt="Zeb89 in giro">
-    <p class="post-content">Quei vlog all'aperto erano leggendari, un mix unico di ironia e situazioni assurde.</p>
-    
-    <div class="post-footer">
-      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-      <button class="vote-btn" onclick="toggleLike(this)">
-        👍︎ <span class="count-up">29</span>
-      </button>
-    </div>
-
-    <div class="comments-section">
-      <div id="comment-list">
         <div class="comment-item">
           <img class="comment-avatar" src="img/smarco28.png" alt="Smarco28">
           <div class="comment-body">
             <h4>Smarco28</h4>
-            <p>E c'era gente che lo incontrava davvero per strada</p>
+            <p>Auguri!!!</p>
           </div>
         </div>
-      </div>
-      <div class="add-comment-box">
-        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
-        <button class="comment-submit" onclick="addComment(this)">Invia</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Altro Post di Esempio -->
-  <div class="post-card">
-    <div class="post-date">
-      <span>📅 5 Ottobre 2026</span>
-      <span class="author-tag">MemeMaster_It</span>
-    </div>
-    <div class="post-title"><strong>"Eh! Volevi!" citazione leggendaria</strong></div>
-    <p class="post-content">Ogni volta che succede qualcosa inaspettato nella vita mi viene spontaneo dirlo. Ormai è un riflesso condizionato.</p>
-    
-    <div class="post-footer">
-      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-      <button class="vote-btn" onclick="toggleLike(this)">
-        👍︎ <span class="count-up">16</span>
-      </button>
-    </div>
-
-    <div class="comments-section">
-      <div id="comment-list">
         <div class="comment-item">
-          <img class="comment-avatar" src="img/smarco28.png" alt="Smarco28">
+          <img class="comment-avatar" src="albonz84.jpg" alt="Albonz84">
           <div class="comment-body">
-            <h4>Smarco28</h4>
-            <p>Un tormentone che non invecchierà mai!</p>
+            <h4>Albonz84</h4>
+            <p>E' stato duro eh!</p>
+          </div>
+        </div>
+        <div class="comment-item">
+          <img class="comment-avatar" src="albonz84.jpg" alt="Dirtblock">
+          <div class="comment-body">
+            <h4>Dirtblock</h4>
+            <p>Congratulazioni! Grazie di tutto questo lavoro!</p>
           </div>
         </div>
       </div>
@@ -357,63 +321,3 @@
 <script>
   function toggleLike(button) {
     const countSpan = button.querySelector('.count-up');
-    let currentCount = parseInt(countSpan.textContent);
-
-    if (button.classList.contains('active')) {
-      button.classList.remove('active');
-      currentCount -= 1;
-    } else {
-      button.classList.add('active');
-      currentCount += 1;
-    }
-    countSpan.textContent = currentCount;
-  }
-
-  function toggleComments(btn) {
-    const card = btn.closest('.post-card');
-    const section = card.querySelector('.comments-section');
-    section.classList.toggle('open');
-    if (section.classList.contains('open')) {
-      btn.textContent = '💬 Nascondi commenti';
-    } else {
-      btn.textContent = '💬 Mostra commenti';
-    }
-  }
-
-  function addComment(btn) {
-    const box = btn.closest('.add-comment-box');
-    const input = box.querySelector('.comment-input');
-    const text = input.value.trim();
-
-    if (text !== "") {
-      const card = btn.closest('.post-card');
-      const list = card.querySelector('#comment-list');
-
-      const newComment = document.createElement('div');
-      newComment.className = 'comment-item';
-      newComment.innerHTML = `
-        <img class="comment-avatar" src="albonz84.jpg" alt="Tu">
-        <div class="comment-body">
-          <h4>Tu</h4>
-          <p>${escapeHtml(text)}</p>
-        </div>
-      `;
-      list.appendChild(newComment);
-      input.value = "";
-    }
-  }
-
-  function handleCommentInput(event, input) {
-    if (event.key === 'Enter') {
-      const btn = input.nextElementSibling;
-      addComment(btn);
-    }
-  }
-
-  function escapeHtml(text) {
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  }
-</script>
-
-</body>
-</html>
