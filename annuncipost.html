@@ -86,7 +86,6 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 10px;
     border-top: 1px solid rgba(120,185,255,.2);
     padding-top: 10px;
   }
@@ -146,11 +145,8 @@
     <div class="post-title"><strong>zeb89 accenna di voler entrare in politica</strong></div>
     <p class="post-content">La fanpage non sostiene alcuna affermazione o idea politica e non si assume la responsabilità di eventuali affermazioni fuori posto.</p>
     <div class="post-footer">
-      <button class="vote-btn" onclick="vote(this, 'up')">
+      <button class="vote-btn" onclick="toggleLike(this)">
         👍︎ <span class="count-up">17</span>
-      </button>
-      <button class="vote-btn" onclick="vote(this, 'down')">
-        👎︎ <span class="count-down">2</span>
       </button>
     </div>
   </div>
@@ -164,11 +160,8 @@
     <h3 class="post-title" style="font-size: 1.1rem; margin: 0 0 6px; color: #fff;">Benvenuti sul nuovo sito della Fanpage!</h3>
     <p style="margin: 0 0 12px; color: #bcd9f7; font-size: 0.98rem;">Il sito ufficiale su GitHub è online e operativo. Continuate a seguire il subreddit <strong>r/Zeb89FanpageOfficial</strong> per non perdervi nessun meme o discussione fresca!</p>
     <div class="post-footer">
-      <button class="vote-btn" onclick="vote(this, 'up')">
+      <button class="vote-btn" onclick="toggleLike(this)">
         👍︎ <span class="count-up">21</span>
-      </button>
-      <button class="vote-btn" onclick="vote(this, 'down')">
-        👎︎ <span class="count-down">0</span>
       </button>
     </div>
   </div>
@@ -178,45 +171,18 @@
 </div>
 
 <script>
-  function vote(button, type) {
-    const footer = button.closest('.post-footer');
-    const upBtn = footer.querySelector('.vote-btn:nth-child(1)');
-    const downBtn = footer.querySelector('.vote-btn:nth-child(2)');
-    
-    const upSpan = upBtn.querySelector('.count-up');
-    const downSpan = downBtn.querySelector('.count-down');
+  function toggleLike(button) {
+    const countSpan = button.querySelector('.count-up');
+    let currentCount = parseInt(countSpan.textContent);
 
-    let upCount = parseInt(upSpan.textContent);
-    let downCount = parseInt(downSpan.textContent);
-
-    if (type === 'up') {
-      if (upBtn.classList.contains('active')) {
-        upBtn.classList.remove('active');
-        upCount -= 1;
-      } else {
-        upBtn.classList.add('active');
-        upCount += 1;
-        if (downBtn.classList.contains('active')) {
-          downBtn.classList.remove('active');
-          downCount -= 1;
-        }
-      }
-    } else if (type === 'down') {
-      if (downBtn.classList.contains('active')) {
-        downBtn.classList.remove('active');
-        downCount -= 1;
-      } else {
-        downBtn.classList.add('active');
-        downCount += 1;
-        if (upBtn.classList.contains('active')) {
-          upBtn.classList.remove('active');
-          upCount -= 1;
-        }
-      }
+    if (button.classList.contains('active')) {
+      button.classList.remove('active');
+      currentCount -= 1;
+    } else {
+      button.classList.add('active');
+      currentCount += 1;
     }
-
-    upSpan.textContent = upCount;
-    downSpan.textContent = downCount;
+    countSpan.textContent = currentCount;
   }
 </script>
 
