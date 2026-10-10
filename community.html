@@ -93,7 +93,7 @@
 
   .post-footer {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     border-top: 1px solid rgba(120,185,255,.2);
     padding-top: 10px;
@@ -113,6 +113,33 @@
   .comment-toggle-btn:hover {
     background: rgba(80,170,255,0.15);
     color: #fff;
+  }
+
+  .vote-btn {
+    background: rgba(80,170,255,0.1);
+    border: 1px solid rgba(120,185,255,0.3);
+    color: #bcd9f7;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .vote-btn:hover {
+    background: rgba(80,170,255,0.25);
+    border-color: rgba(120,185,255,0.6);
+  }
+
+  .vote-btn.active {
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
+    color: #fff;
+    border-color: #8fd0ff;
+    box-shadow: 0 0 10px rgba(80,170,255,0.5);
   }
 
   /* Sezione Commenti */
@@ -221,6 +248,7 @@
     
     <div class="post-footer">
       <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+      <button class="vote-btn" onclick="toggleLike(this)">👍︎</button>
     </div>
 
     <!-- Sezione Commenti -->
@@ -265,6 +293,7 @@
     
     <div class="post-footer">
       <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+      <button class="vote-btn" onclick="toggleLike(this)">👍︎</button>
     </div>
 
     <div class="comments-section">
@@ -295,6 +324,7 @@
     
     <div class="post-footer">
       <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+      <button class="vote-btn" onclick="toggleLike(this)">👍︎</button>
     </div>
 
     <div class="comments-section">
@@ -319,6 +349,10 @@
 </div>
 
 <script>
+  function toggleLike(button) {
+    button.classList.toggle('active');
+  }
+
   function toggleComments(btn) {
     const card = btn.closest('.post-card');
     const section = card.querySelector('.comments-section');
