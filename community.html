@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Community - Zeb89 Fanpage</title>
-<link rel="icon" href="logo.png">
+<link rel="icon" href="community.png">
 <style>
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -186,6 +186,11 @@
     color: #bcd9f7;
   }
 
+  .comment-body a {
+    color: #5cc0ff;
+    word-break: break-all;
+  }
+
   .add-comment-box {
     display: flex;
     gap: 8px;
@@ -235,6 +240,42 @@
     <h2>Spazio ai Fan</h2>
     <p>Qui trovi i post, le clip e i pensieri condivisi direttamente dagli utenti della community.</p>
   </section>
+
+  <!-- Nuovo Post: Smarco28 (10 Ottobre 2026) -->
+  <div class="post-card">
+    <div class="post-date">
+      <span>📅 10 Ottobre 2026</span>
+      <span class="author-tag">Smarco28</span>
+    </div>
+    <div class="post-title"><strong>Il primo video di Zeb su YT</strong></div>
+    <p class="post-content">C'è qualcuno che ricorda il nome del primo video di Zeb su YT?</p>
+    
+    <div class="post-footer">
+      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+      <button class="vote-btn" onclick="toggleLike(this)">👍︎</button>
+    </div>
+
+    <!-- Sezione Commenti con la risposta di Fronte -->
+    <div class="comments-section">
+      <div id="comment-list">
+        <div class="comment-item">
+          <img class="comment-avatar" src="fronte.jpg" alt="Fronte">
+          <div class="comment-body">
+            <h4>Fronte ★</h4>
+            <p>
+              <a href="https://youtu.be/-wvUQD0BXpk?si=kW6Z2JlFJ9-4P9qG" target="_blank">https://youtu.be/-wvUQD0BXpk?si=kW6Z2JlFJ9-4P9qG</a> ecco. è stato duro trovarlo. ricorda che è di Serious Sam
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Casella per aggiungere un commento -->
+      <div class="add-comment-box">
+        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
+        <button class="comment-submit" onclick="addComment(this)">Invia</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Post: Chi ricorda Zeb89Talks? (Smarco28) -->
   <div class="post-card">
