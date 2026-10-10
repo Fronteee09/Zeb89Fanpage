@@ -111,6 +111,44 @@
     font-weight: 600;
   }
 
+  .profile-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .followers-count {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #bcd9f7;
+    background: rgba(10,30,60,0.5);
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(120,185,255,0.25);
+  }
+
+  .follow-btn {
+    padding: 6px 18px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid #6cc0ff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
+    box-shadow: 0 0 10px rgba(80,170,255,0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .follow-btn.following {
+    background: rgba(10,30,60,0.7);
+    border-color: rgba(120,185,255,0.4);
+    color: #8fb4dc;
+    box-shadow: none;
+  }
+
   .profile-joined {
     font-size: 0.85rem;
     color: #8fb4dc;
@@ -157,6 +195,11 @@
       <span class="badge">Moderatore Reddit</span>
     </div>
 
+    <div class="profile-stats">
+      <span class="followers-count">👥 <span id="follower-num">11</span> Follower</span>
+      <button class="follow-btn" id="follow-btn" onclick="toggleFollow()">Segui</button>
+    </div>
+
     <div class="profile-joined">
       📅 Utente dal 29/12/2025
     </div>
@@ -170,5 +213,26 @@
   <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
 
 </div>
+
+<script>
+  function toggleFollow() {
+    const btn = document.getElementById('follow-btn');
+    const countSpan = document.getElementById('follower-num');
+    let currentCount = parseInt(countSpan.textContent);
+
+    if (btn.classList.contains('following')) {
+      btn.classList.remove('following');
+      btn.textContent = 'Segui';
+      currentCount -= 1;
+    } else {
+      btn.classList.add('following');
+      btn.textContent = 'Seguito';
+      currentCount += 1;
+    }
+
+    countSpan.textContent = currentCount;
+  }
+</script>
+
 </body>
 </html>
