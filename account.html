@@ -83,15 +83,8 @@
     color: #fff;
     font-size: 0.9rem;
   }
-  .auth-input:focus {
-    outline: none;
-    border-color: #5cc0ff;
-  }
-  .auth-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
+  .auth-input:focus { outline: none; border-color: #5cc0ff; }
+  .auth-actions { display: flex; gap: 10px; justify-content: center; }
 
   .profile-card {
     background: rgba(5,20,45,.75);
@@ -124,6 +117,28 @@
     color: #5cc0ff;
     margin-bottom: 16px;
     font-weight: 600;
+  }
+
+  .avatar-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+  }
+  .avatar-option {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(120,185,255,0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .avatar-option:hover, .avatar-option.selected {
+    border-color: #5cc0ff;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(80,170,255,0.8);
   }
 
   footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
@@ -159,11 +174,21 @@
 
   <!-- Scheda Profilo dell'Utente Autenticato -->
   <div id="profile-section" class="profile-card" style="display: none;">
-    <img class="profile-avatar" src="logo.png" alt="Avatar Utente">
+    <img id="profile-avatar-img" class="profile-avatar" src="fotopr1.png" alt="Avatar Utente">
     <h2 class="profile-name" id="user-display-name">Caricamento...</h2>
     <div class="profile-status">● Utente Attivo</div>
+
+    <p style="font-size: 0.85rem; color: #8fb4dc; margin-bottom: 8px;">Scegli la tua foto profilo:</p>
+    <div class="avatar-selector" id="avatar-options-container">
+      <img src="fotopr1.png" class="avatar-option" onclick="changeAvatar('fotopr1.png')">
+      <img src="fotopr2.png" class="avatar-option" onclick="changeAvatar('fotopr2.png')">
+      <img src="fotopr3.png" class="avatar-option" onclick="changeAvatar('fotopr3.png')">
+      <img src="fotopr4.png" class="avatar-option" onclick="changeAvatar('fotopr4.png')">
+    </div>
     
-    <button class="btn" style="margin-top: 10px;" onclick="window.logoutUser()">Disconnettiti</button>
+    <div style="margin-top: 15px;">
+      <button class="btn" style="background: linear-gradient(180deg, #ff6b6b 0%, #c92a2a 100%);" onclick="window.logoutUser()">Disconnettiti</button>
+    </div>
   </div>
 
   <footer>Zeb89 Fanpage · Pagina non ufficiale fatta dai fan</footer>
@@ -212,7 +237,11 @@
     try {
       const email = nickToEmail(nick);
       const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-      await updateProfile(userCred.user, { displayName: nick });
+      // Default foto profilo: fotopr1.png
+      await updateProfile(userCred.user, { 
+        displayName: nick,
+        photoURL: "fotopr1.png" 
+      });
       document.getElementById('auth-error').style.display = 'none';
     } catch (err) {
       showError("Errore: Nickname già in uso o password troppo breve (min. 6 caratteri).");
@@ -241,6 +270,19 @@
     signOut(auth);
   };
 
+  window.changeAvatar = async function(avatarPath) {
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        await updateProfile(user, { photoURL: avatarPath });
+        document.getElementById('profile-avatar-img').src = avatarPath;
+        alert("Foto profilo aggiornata!");
+      } catch (e) {
+        alert("Errore durante l'aggiornamento della foto.");
+      }
+    }
+  };
+
   function showError(msg) {
     const errDiv = document.getElementById('auth-error');
     errDiv.textContent = msg;
@@ -251,11 +293,31 @@
     const authSec = document.getElementById('auth-section');
     const profSec = document.getElementById('profile-section');
     const nameSpan = document.getElementById('user-display-name');
+    const avatarImg = document.getElementById('profile-avatar-img');
+    const avatarContainer = document.getElementById('avatar-options-container');
 
     if (user) {
       authSec.style.display = 'none';
       profSec.style.display = 'block';
       nameSpan.textContent = user.displayName || user.email.split('@')[0];
+      
+      const currentAvatar = user.photoURL || "fotopr1.png";
+      avatarImg.src = currentAvatar;
+
+      // Gestione disponibilità speciale per "fronte"
+      let avatarsHtml = `
+        <img src="fotopr1.png" class="avatar-option ${currentAvatar === 'fotopr1.png' ? 'selected' : ''}" onclick="changeAvatar('fotopr1.png')">
+        <img src="fotopr2.png" class="avatar-option ${currentAvatar === 'fotopr2.png' ? 'selected' : ''}" onclick="changeAvatar('fotopr2.png')">
+        <img src="fotopr3.png" class="avatar-option ${currentAvatar === 'fotopr3.png' ? 'selected' : ''}" onclick="changeAvatar('fotopr3.png')">
+        <img src="fotopr4.png" class="avatar-option ${currentAvatar === 'fotopr4.png' ? 'selected' : ''}" onclick="changeAvatar('fotopr4.png')">
+      `;
+
+      if (user.displayName && user.displayName.toLowerCase() === "fronte") {
+        avatarsHtml += `<img src="fronte.jpg" class="avatar-option ${currentAvatar === 'fronte.jpg' ? 'selected' : ''}" onclick="changeAvatar('fronte.jpg')" title="Esclusivo Fronte">`;
+      }
+
+      avatarContainer.innerHTML = avatarsHtml;
+
     } else {
       authSec.style.display = 'block';
       profSec.style.display = 'none';
