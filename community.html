@@ -54,7 +54,7 @@
 
   .btn {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 8px 16px;
     color: #fff;
     font-weight: 600;
     font-size: 0.9rem;
@@ -66,8 +66,12 @@
     cursor: pointer;
   }
   .btn:active { filter: brightness(.9); }
+  .btn-danger {
+    background: linear-gradient(180deg, #ff6b6b 0%, #c92a2a 100%);
+    border-color: #ffa8a8;
+    box-shadow: 0 0 10px rgba(255,107,107,0.5);
+  }
 
-  /* Sezione Auth (Login / Register) */
   .auth-box {
     display: flex;
     flex-direction: column;
@@ -88,11 +92,6 @@
     outline: none;
     border-color: #5cc0ff;
   }
-  .auth-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
   .user-bar {
     display: flex;
     justify-content: space-between;
@@ -105,7 +104,6 @@
   }
   .user-info { font-weight: 600; color: #5cc0ff; }
 
-  /* Form Nuovo Post */
   .create-post-form {
     display: flex;
     flex-direction: column;
@@ -114,7 +112,6 @@
   }
   .post-input-textarea { resize: vertical; min-height: 80px; }
 
-  /* Cards dei Post */
   .post-card {
     background: rgba(5,20,45,.65);
     border: 1px solid rgba(120,185,255,.35);
@@ -127,6 +124,25 @@
   
   .post-title { margin: 0 0 8px; font-size: 1.15rem; color: #fff; }
   .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.9rem; line-height: 1.4; }
+
+  .post-media {
+    margin-bottom: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(120,185,255,0.3);
+  }
+  .post-media img {
+    width: 100%;
+    max-height: 350px;
+    object-fit: cover;
+    display: block;
+  }
+  .post-media iframe {
+    width: 100%;
+    height: 315px;
+    border: none;
+    display: block;
+  }
 
   .post-footer {
     display: flex;
@@ -147,34 +163,8 @@
     font-size: 0.85rem;
     transition: all 0.2s;
   }
-  .comment-toggle-btn:hover {
-    background: rgba(80,170,255,0.15);
-    color: #fff;
-  }
+  .comment-toggle-btn:hover { background: rgba(80,170,255,0.15); color: #fff; }
 
-  .vote-btn {
-    background: rgba(80,170,255,0.1);
-    border: 1px solid rgba(120,185,255,0.3);
-    color: #bcd9f7;
-    padding: 6px 14px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-  }
-  .vote-btn:hover { background: rgba(80,170,255,0.25); border-color: rgba(120,185,255,0.6); }
-  .vote-btn.active {
-    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
-    color: #fff;
-    border-color: #8fd0ff;
-    box-shadow: 0 0 10px rgba(80,170,255,0.5);
-  }
-
-  /* Sezione Commenti */
   .comments-section {
     display: none;
     margin-top: 14px;
@@ -185,6 +175,7 @@
 
   .comment-item {
     display: flex;
+    justify-content: space-between;
     align-items: flex-start;
     gap: 10px;
     margin-bottom: 10px;
@@ -193,9 +184,8 @@
     border-radius: 8px;
     border: 1px solid rgba(120,185,255,0.15);
   }
-
   .comment-body h4 { margin: 0 0 2px; font-size: 0.9rem; color: #5cc0ff; }
-  .comment-body p { margin: 0; font-size: 0.85rem; color: #bcd9f7; }
+  .comment-body p { margin: 0; font-size: 0.85rem; color: #bcd9f7; word-break: break-word; }
 
   .add-comment-box { display: flex; gap: 8px; margin-top: 10px; }
   .comment-input {
@@ -205,16 +195,6 @@
     border-radius: 8px;
     padding: 8px 12px;
     color: #fff;
-    font-size: 0.85rem;
-  }
-  .comment-submit {
-    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
-    border: none;
-    color: #fff;
-    padding: 0 14px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
     font-size: 0.85rem;
   }
 
@@ -227,45 +207,45 @@
 
   <header class="glass">
     <div class="header-left">
-      <img class="logo-small" src="community.png" alt="Logo Community">
+      <img class="logo-small" src="logo.png" alt="Logo Community">
       <h1>Post della Community</h1>
     </div>
     <a class="btn" href="index.html">← Torna alla Home</a>
   </header>
 
-  <!-- Box Login / Registrazione con Nickname -->
+  <!-- Sezione Auth -->
   <section id="auth-section" class="glass">
     <h2 style="text-align: center;">Accesso Community</h2>
-    <p style="text-align: center;">Inserisci il tuo nickname e password per pubblicare e commentare.</p>
-    
     <div class="auth-box">
       <input type="text" id="auth-nickname" class="auth-input" placeholder="Nickname">
       <input type="password" id="auth-password" class="auth-input" placeholder="Password">
       <div id="auth-error" class="error-msg"></div>
-      <div class="auth-actions">
+      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 5px;">
         <button class="btn" onclick="loginUser()">Accedi</button>
         <button class="btn" style="background: transparent;" onclick="registerUser()">Registrati</button>
       </div>
     </div>
   </section>
 
-  <!-- Pannello Utente Autenticato -->
+  <!-- Pannello Utente Loggato -->
   <div id="user-panel" class="user-bar" style="display: none;">
     <div>Connesso come <span id="current-username" class="user-info"></span></div>
-    <button class="btn" style="padding: 4px 14px; font-size: 0.8rem;" onclick="logoutUser()">Esci</button>
+    <button class="btn btn-danger" style="padding: 4px 12px; font-size: 0.8rem;" onclick="logoutUser()">Esci</button>
   </div>
 
-  <!-- Form Pubblica Nuovo Post (solo se loggato) -->
+  <!-- Form Pubblica Post -->
   <section id="create-post-section" class="glass" style="display: none;">
     <h2>Crea un nuovo post</h2>
     <div class="create-post-form">
       <input type="text" id="post-title-input" class="post-input-text" placeholder="Titolo del post...">
-      <textarea id="post-content-input" class="post-input-textarea" placeholder="Cosa ne pensi?"></textarea>
+      <textarea id="post-content-input" class="post-input-textarea" placeholder="Corpo del testo..."></textarea>
+      <input type="text" id="post-youtube-input" class="post-input-text" placeholder="Link YouTube (opzionale, es. https://youtu.be/...)">
+      <input type="text" id="post-reddit-img-input" class="post-input-text" placeholder="Link Immagine Reddit (opzionale, es. https://i.redd.it/...)">
       <button class="btn" style="align-self: flex-end;" onclick="publishPost()">Pubblica Post</button>
     </div>
   </section>
 
-  <!-- Contenitore Post da Firebase -->
+  <!-- Lista Post -->
   <div id="posts-container">
     <div class="glass" style="text-align: center;">Caricamento post in corso...</div>
   </div>
@@ -274,10 +254,9 @@
 
 </div>
 
-<!-- Firebase SDK via CDN -->
+<!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
   import { 
     getAuth, 
     createUserWithEmailAndPassword, 
@@ -290,7 +269,8 @@
     getFirestore, 
     collection, 
     addDoc, 
-    getDocs, 
+    deleteDoc,
+    doc, 
     query, 
     orderBy, 
     onSnapshot,
@@ -308,60 +288,38 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // Genera una email fittizia dal nickname
   function nickToEmail(nick) {
     const cleanNick = nick.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
     return `${cleanNick}@zeb89fanpage.local`;
   }
 
-  // Registrazione Utente
   window.registerUser = async function() {
     const nick = document.getElementById('auth-nickname').value.trim();
     const pass = document.getElementById('auth-password').value;
-    const errDiv = document.getElementById('auth-error');
-
-    if (!nick || !pass) {
-      showError("Inserisci nickname e password.");
-      return;
-    }
-
+    if (!nick || !pass) return showError("Inserisci nickname e password.");
     try {
-      const email = nickToEmail(nick);
-      const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+      const userCred = await createUserWithEmailAndPassword(auth, nickToEmail(nick), pass);
       await updateProfile(userCred.user, { displayName: nick });
-      errDiv.style.display = 'none';
     } catch (err) {
-      showError("Errore registazione: nickname già preso o password troppo corta.");
+      showError("Errore registrazione: nickname già in uso o password troppo corta.");
     }
   };
 
-  // Login Utente
   window.loginUser = async function() {
     const nick = document.getElementById('auth-nickname').value.trim();
     const pass = document.getElementById('auth-password').value;
-
-    if (!nick || !pass) {
-      showError("Inserisci nickname e password.");
-      return;
-    }
-
+    if (!nick || !pass) return showError("Inserisci nickname e password.");
     try {
-      const email = nickToEmail(nick);
-      await signInWithEmailAndPassword(auth, email, pass);
-      document.getElementById('auth-error').style.display = 'none';
+      await signInWithEmailAndPassword(auth, nickToEmail(nick), pass);
     } catch (err) {
       showError("Nickname o password non validi.");
     }
   };
 
-  // Logout Utente
-  window.logoutUser = function() {
-    signOut(auth);
-  };
+  window.logoutUser = () => signOut(auth);
 
   function showError(msg) {
     const errDiv = document.getElementById('auth-error');
@@ -369,76 +327,114 @@
     errDiv.style.display = 'block';
   }
 
-  // Gestione stato Auth UI
   onAuthStateChanged(auth, (user) => {
-    const authSec = document.getElementById('auth-section');
-    const userPan = document.getElementById('user-panel');
-    const createSec = document.getElementById('create-post-section');
-    const nameSpan = document.getElementById('current-username');
-
-    if (user) {
-      authSec.style.display = 'none';
-      userPan.style.display = 'flex';
-      createSec.style.display = 'block';
-      nameSpan.textContent = user.displayName || user.email.split('@')[0];
-    } else {
-      authSec.style.display = 'block';
-      userPan.style.display = 'none';
-      createSec.style.display = 'none';
-    }
+    document.getElementById('auth-section').style.display = user ? 'none' : 'block';
+    document.getElementById('user-panel').style.display = user ? 'flex' : 'none';
+    document.getElementById('create-post-section').style.display = user ? 'block' : 'none';
+    if (user) document.getElementById('current-username').textContent = user.displayName;
   });
 
-  // Pubblicazione Post su Firestore
+  // Funzione per convertire link YouTube in Embed sicuro
+  function getYouTubeEmbedUrl(url) {
+    if (!url) return null;
+    let videoId = "";
+    if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1]?.split("?")[0];
+    } else if (url.includes("watch?v=")) {
+      videoId = url.split("watch?v=")[1]?.split("&")[0];
+    }
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  }
+
+  // Pubblica Post
   window.publishPost = async function() {
     const title = document.getElementById('post-title-input').value.trim();
     const content = document.getElementById('post-content-input').value.trim();
+    const ytUrl = document.getElementById('post-youtube-input').value.trim();
+    const redditImg = document.getElementById('post-reddit-img-input').value.trim();
 
-    if (!title || !content) return;
+    if (!title || !content) {
+      alert("Il titolo e il corpo del testo sono obbligatori!");
+      return;
+    }
+
+    // Validazione immagini Reddit opzionale ma consigliata
+    if (redditImg && !redditImg.includes("redd.it") && !redditImg.includes("reddit.com")) {
+      alert("L'immagine deve provenire da Reddit (es. i.redd.it)");
+      return;
+    }
 
     try {
       await addDoc(collection(db, "posts"), {
-        title: title,
-        content: content,
-        author: auth.currentUser.displayName || "Anonimo",
+        title,
+        content,
+        youtubeUrl: getYouTubeEmbedUrl(ytUrl),
+        redditImage: redditImg || null,
+        author: auth.currentUser.displayName,
+        uid: auth.currentUser.uid,
         createdAt: serverTimestamp()
       });
       document.getElementById('post-title-input').value = "";
       document.getElementById('post-content-input').value = "";
+      document.getElementById('post-youtube-input').value = "";
+      document.getElementById('post-reddit-img-input').value = "";
     } catch (e) {
-      alert("Errore durante la pubblicazione del post.");
+      alert("Errore nella pubblicazione del post.");
     }
   };
 
-  // Pubblicazione Commento su Firestore
+  // Elimina Post (Solo autore)
+  window.deletePost = async function(postId) {
+    if (confirm("Vuoi davvero eliminare questo post?")) {
+      try {
+        await deleteDoc(doc(db, "posts", postId));
+      } catch (e) {
+        alert("Non hai i permessi per eliminare questo post.");
+      }
+    }
+  };
+
+  // Aggiungi Commento (Blocco link web)
   window.addFirebaseComment = async function(postId, btn) {
     const input = btn.previousElementSibling;
     const text = input.value.trim();
 
-    if (!text || !auth.currentUser) {
-      if(!auth.currentUser) alert("Devi accedere per commentare!");
+    if (!text) return;
+    if (text.includes("http://") || text.includes("https://") || text.includes("www.")) {
+      alert("Nei commenti non è consentito inserire link web o immagini!");
       return;
     }
 
     try {
       await addDoc(collection(db, "posts", postId, "comments"), {
-        text: text,
-        author: auth.currentUser.displayName || "Anonimo",
+        text,
+        author: auth.currentUser.displayName,
+        uid: auth.currentUser.uid,
         createdAt: serverTimestamp()
       });
       input.value = "";
     } catch (e) {
-      alert("Errore durante l'invio del commento.");
+      alert("Errore nell'invio del commento.");
     }
   };
 
-  // Listener In Tempo Reale dei Post su Firestore
+  // Elimina Commento (Autore commento o Autore post)
+  window.deleteComment = async function(postId, commentId) {
+    try {
+      await deleteDoc(doc(db, "posts", postId, "comments", commentId));
+    } catch (e) {
+      alert("Non puoi eliminare questo commento.");
+    }
+  };
+
+  // Listener Realtime Post
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     const container = document.getElementById('posts-container');
     container.innerHTML = "";
 
     if (snapshot.empty) {
-      container.innerHTML = `<div class="glass" style="text-align: center;">Nessun post presente. Sii il primo a pubblicare!</div>`;
+      container.innerHTML = `<div class="glass" style="text-align: center;">Nessun post presente.</div>`;
       return;
     }
 
@@ -446,40 +442,51 @@
       const post = docSnap.data();
       const postId = docSnap.id;
       const dateStr = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
+      const isMyPost = auth.currentUser && auth.currentUser.uid === post.uid;
+
+      let mediaHtml = "";
+      if (post.redditImage) {
+        mediaHtml += `<div class="post-media"><img src="${escapeHtml(post.redditImage)}" alt="Immagine Reddit"></div>`;
+      }
+      if (post.youtubeUrl) {
+        mediaHtml += `<div class="post-media"><iframe src="${post.youtubeUrl}" allowfullscreen></iframe></div>`;
+      }
 
       const card = document.createElement('div');
       card.className = 'post-card';
       card.innerHTML = `
         <div class="post-date">
-          <span>📅 ${dateStr}</span>
-          <span class="author-tag">${escapeHtml(post.author)}</span>
+          <span>📅 ${dateStr} — <span class="author-tag">${escapeHtml(post.author)}</span></span>
+          ${isMyPost ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deletePost('${postId}')">Elimina Post</button>` : ''}
         </div>
         <div class="post-title"><strong>${escapeHtml(post.title)}</strong></div>
         <p class="post-content">${escapeHtml(post.content)}</p>
+        ${mediaHtml}
         
         <div class="post-footer">
           <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-          <button class="vote-btn" onclick="this.classList.toggle('active')">👍︎</button>
         </div>
 
         <div class="comments-section">
-          <div id="comments-list-${postId}">Cultura commenti in corso...</div>
+          <div id="comments-list-${postId}">Caricamento...</div>
           <div class="add-comment-box">
-            <input type="text" class="comment-input" placeholder="Scrivi un commento...">
-            <button class="comment-submit" onclick="window.addFirebaseComment('${postId}', this)">Invia</button>
+            <input type="text" class="comment-input" placeholder="Scrivi un commento (senza link)..." onkeydown="if(event.key==='Enter') addFirebaseComment('${postId}', this.nextElementSibling)">
+            <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="addFirebaseComment('${postId}', this)">Invia</button>
           </div>
         </div>
       `;
       container.appendChild(card);
 
-      // Listener per i commenti del singolo post
-      const commentsQuery = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc"));
-      onSnapshot(commentsQuery, (commSnap) => {
+      // Listener Commenti
+      onSnapshot(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")), (commSnap) => {
         const commList = document.getElementById(`comments-list-${postId}`);
         if(commList) {
-          commList.innerHTML = "";
+          commList.innerHTML = commSnap.empty ? "<p style='font-size:0.8rem; color:#8fb4dc; margin-bottom:8px;'>Nessun commento.</p>" : "";
           commSnap.docs.forEach(cDoc => {
             const cData = cDoc.data();
+            const cId = cDoc.id;
+            const canDeleteComment = auth.currentUser && (auth.currentUser.uid === cData.uid || auth.currentUser.uid === post.uid);
+
             const item = document.createElement('div');
             item.className = 'comment-item';
             item.innerHTML = `
@@ -487,6 +494,7 @@
                 <h4>${escapeHtml(cData.author)}</h4>
                 <p>${escapeHtml(cData.text)}</p>
               </div>
+              ${canDeleteComment ? `<button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteComment('${postId}', '${cId}')">X</button>` : ''}
             `;
             commList.appendChild(item);
           });
