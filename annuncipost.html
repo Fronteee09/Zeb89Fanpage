@@ -105,6 +105,25 @@
   .post-title { margin: 0 0 8px; font-size: 1.15rem; color: #fff; }
   .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.9rem; line-height: 1.4; }
 
+  .post-media {
+    margin-bottom: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(120,185,255,0.3);
+  }
+  .post-media img {
+    width: 100%;
+    max-height: 350px;
+    object-fit: cover;
+    display: block;
+  }
+  .post-media iframe {
+    width: 100%;
+    height: 315px;
+    border: none;
+    display: block;
+  }
+
   .post-footer {
     display: flex;
     justify-content: space-between;
@@ -200,12 +219,14 @@
     <p>Qui raccogliamo gli annunci ufficiali, i comunicati e gli aggiornamenti importanti per la community.</p>
   </section>
 
-  <!-- Form di Pubblicazione Annuncio (Visibile SOLO al tuo UID) -->
+  <!-- Form di Pubblicazione Annuncio (Visibile SOLO al tuo UID admin) -->
   <section id="admin-post-section" class="glass" style="display: none;">
     <h2>Pubblica Annuncio Ufficiale (Admin)</h2>
     <div class="create-announcement-form">
       <input type="text" id="announcement-title" class="input-field" placeholder="Titolo dell'annuncio...">
       <textarea id="announcement-content" class="input-field" placeholder="Contenuto dell'annuncio..."></textarea>
+      <input type="text" id="announcement-youtube" class="input-field" placeholder="Link YouTube (opzionale, es. https://youtu.be/...)">
+      <input type="text" id="announcement-reddit" class="input-field" placeholder="Link Immagine Reddit (opzionale, es. https://i.redd.it/...)">
       <button class="btn" style="align-self: flex-end;" onclick="publishAnnouncement()">Pubblica Annuncio</button>
     </div>
   </section>
@@ -260,12 +281,30 @@
     }
   });
 
+  function getYouTubeEmbedUrl(url) {
+    if (!url) return null;
+    let videoId = "";
+    if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1]?.split("?")[0];
+    } else if (url.includes("watch?v=")) {
+      videoId = url.split("watch?v=")[1]?.split("&")[0];
+    }
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  }
+
   window.publishAnnouncement = async function() {
     const title = document.getElementById('announcement-title').value.trim();
     const content = document.getElementById('announcement-content').value.trim();
+    const ytUrl = document.getElementById('announcement-youtube').value.trim();
+    const redditImg = document.getElementById('announcement-reddit').value.trim();
 
     if (!title || !content) {
       alert("Titolo e contenuto sono obbligatori!");
+      return;
+    }
+
+    if (redditImg && !redditImg.includes("redd.it") && !redditImg.includes("reddit.com")) {
+      alert("L'immagine deve provenire da Reddit (es. i.redd.it)");
       return;
     }
 
@@ -273,12 +312,16 @@
       await addDoc(collection(db, "announcements"), {
         title,
         content,
+        youtubeUrl: getYouTubeEmbedUrl(ytUrl),
+        redditImage: redditImg || null,
         author: "Staff Ufficiale",
         uid: auth.currentUser.uid,
         createdAt: serverTimestamp()
       });
       document.getElementById('announcement-title').value = "";
       document.getElementById('announcement-content').value = "";
+      document.getElementById('announcement-youtube').value = "";
+      document.getElementById('announcement-reddit').value = "";
     } catch (e) {
       alert("Errore durante la pubblicazione.");
     }
@@ -304,7 +347,7 @@
       return;
     }
     if (text.includes("http://") || text.includes("https://") || text.includes("www.")) {
-      alert("Nei commenti non è consentito inserire link web!");
+      alert("Nei commenti non è consentito inserire link web o immagini!");
       return;
     }
 
@@ -345,6 +388,14 @@
       const dateStr = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
       const isAdmin = auth.currentUser && auth.currentUser.uid === ADMIN_UID;
 
+      let mediaHtml = "";
+      if (post.redditImage) {
+        mediaHtml += `<div class="post-media"><img src="${escapeHtml(post.redditImage)}" alt="Immagine Reddit"></div>`;
+      }
+      if (post.youtubeUrl) {
+        mediaHtml += `<div class="post-media"><iframe src="${post.youtubeUrl}" allowfullscreen></iframe></div>`;
+      }
+
       const card = document.createElement('div');
       card.className = 'post-card';
       card.innerHTML = `
@@ -354,6 +405,7 @@
         </div>
         <div class="post-title"><strong>${escapeHtml(post.title)}</strong></div>
         <p class="post-content">${escapeHtml(post.content)}</p>
+        ${mediaHtml}
         
         <div class="post-footer">
           <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
