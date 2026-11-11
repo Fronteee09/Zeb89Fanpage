@@ -69,7 +69,6 @@
   .btn-danger {
     background: linear-gradient(180deg, #ff6b6b 0%, #c92a2a 100%);
     border-color: #ffa8a8;
-    box-shadow: 0 0 10px rgba(255,107,107,0.5);
   }
 
   .auth-box {
@@ -291,6 +290,8 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  const ADMIN_UID = "ZP8lYMOoSFUuPVb55I0rXwiqo8a2";
+
   function nickToEmail(nick) {
     const cleanNick = nick.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
     return `${cleanNick}@zeb89fanpage.local`;
@@ -334,7 +335,6 @@
     if (user) document.getElementById('current-username').textContent = user.displayName;
   });
 
-  // Funzione per convertire link YouTube in Embed sicuro
   function getYouTubeEmbedUrl(url) {
     if (!url) return null;
     let videoId = "";
@@ -346,7 +346,6 @@
     return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
   }
 
-  // Pubblica Post
   window.publishPost = async function() {
     const title = document.getElementById('post-title-input').value.trim();
     const content = document.getElementById('post-content-input').value.trim();
@@ -358,7 +357,6 @@
       return;
     }
 
-    // Validazione immagini Reddit opzionale ma consigliata
     if (redditImg && !redditImg.includes("redd.it") && !redditImg.includes("reddit.com")) {
       alert("L'immagine deve provenire da Reddit (es. i.redd.it)");
       return;
@@ -383,7 +381,6 @@
     }
   };
 
-  // Elimina Post (Solo autore)
   window.deletePost = async function(postId) {
     if (confirm("Vuoi davvero eliminare questo post?")) {
       try {
@@ -394,7 +391,6 @@
     }
   };
 
-  // Aggiungi Commento (Blocco link web)
   window.addFirebaseComment = async function(postId, btn) {
     const input = btn.previousElementSibling;
     const text = input.value.trim();
@@ -418,7 +414,6 @@
     }
   };
 
-  // Elimina Commento (Autore commento o Autore post)
   window.deleteComment = async function(postId, commentId) {
     try {
       await deleteDoc(doc(db, "posts", postId, "comments", commentId));
@@ -427,7 +422,6 @@
     }
   };
 
-  // Listener Realtime Post
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
     const container = document.getElementById('posts-container');
@@ -442,7 +436,7 @@
       const post = docSnap.data();
       const postId = docSnap.id;
       const dateStr = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
-      const isMyPost = auth.currentUser && auth.currentUser.uid === post.uid;
+      const canDeletePost = auth.currentUser && (auth.currentUser.uid === post.uid || auth.currentUser.uid === ADMIN_UID);
 
       let mediaHtml = "";
       if (post.redditImage) {
@@ -457,7 +451,7 @@
       card.innerHTML = `
         <div class="post-date">
           <span>📅 ${dateStr} — <span class="author-tag">${escapeHtml(post.author)}</span></span>
-          ${isMyPost ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deletePost('${postId}')">Elimina Post</button>` : ''}
+          ${canDeletePost ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deletePost('${postId}')">Elimina Post</button>` : ''}
         </div>
         <div class="post-title"><strong>${escapeHtml(post.title)}</strong></div>
         <p class="post-content">${escapeHtml(post.content)}</p>
@@ -477,7 +471,6 @@
       `;
       container.appendChild(card);
 
-      // Listener Commenti
       onSnapshot(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")), (commSnap) => {
         const commList = document.getElementById(`comments-list-${postId}`);
         if(commList) {
@@ -485,7 +478,11 @@
           commSnap.docs.forEach(cDoc => {
             const cData = cDoc.data();
             const cId = cDoc.id;
-            const canDeleteComment = auth.currentUser && (auth.currentUser.uid === cData.uid || auth.currentUser.uid === post.uid);
+            const canDeleteComment = auth.currentUser && (
+              auth.currentUser.uid === cData.uid || 
+              auth.currentUser.uid === post.uid || 
+              auth.currentUser.uid === ADMIN_UID
+            );
 
             const item = document.createElement('div');
             item.className = 'comment-item';
