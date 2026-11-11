@@ -54,7 +54,7 @@
 
   .btn {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 8px 16px;
     color: #fff;
     font-weight: 600;
     font-size: 0.9rem;
@@ -63,8 +63,31 @@
     border-radius: 999px;
     background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
     box-shadow: 0 0 12px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+    cursor: pointer;
   }
   .btn:active { filter: brightness(.9); }
+  .btn-danger {
+    background: linear-gradient(180deg, #ff6b6b 0%, #c92a2a 100%);
+    border-color: #ffa8a8;
+  }
+
+  .create-announcement-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  .input-field {
+    width: 100%;
+    background: rgba(5,20,45,0.8);
+    border: 1px solid rgba(120,185,255,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  .input-field:focus { outline: none; border-color: #5cc0ff; }
+  textarea.input-field { resize: vertical; min-height: 80px; }
 
   h2 { margin: 0 0 10px; font-size: 1.35rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
   p { margin: 0 0 10px; color: #bcd9f7; }
@@ -80,7 +103,7 @@
   .author-tag { color: #5cc0ff; font-weight: 600; }
   
   .post-title { margin: 0 0 8px; font-size: 1.15rem; color: #fff; }
-  .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.85rem; line-height: 1.4; opacity: 0.85; }
+  .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.9rem; line-height: 1.4; }
 
   .post-footer {
     display: flex;
@@ -105,12 +128,7 @@
     gap: 6px;
     transition: all 0.2s ease;
   }
-
-  .vote-btn:hover {
-    background: rgba(80,170,255,0.25);
-    border-color: rgba(120,185,255,0.6);
-  }
-
+  .vote-btn:hover { background: rgba(80,170,255,0.25); border-color: rgba(120,185,255,0.6); }
   .vote-btn.active {
     background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
     color: #fff;
@@ -128,24 +146,19 @@
     font-size: 0.85rem;
     transition: all 0.2s;
   }
-  .comment-toggle-btn:hover {
-    background: rgba(80,170,255,0.15);
-    color: #fff;
-  }
+  .comment-toggle-btn:hover { background: rgba(80,170,255,0.15); color: #fff; }
 
-  /* Sezione Commenti */
   .comments-section {
     display: none;
     margin-top: 14px;
     border-top: 1px dashed rgba(120,185,255,0.3);
     padding-top: 12px;
   }
-  .comments-section.open {
-    display: block;
-  }
+  .comments-section.open { display: block; }
 
   .comment-item {
     display: flex;
+    justify-content: space-between;
     align-items: flex-start;
     gap: 10px;
     margin-bottom: 10px;
@@ -154,35 +167,10 @@
     border-radius: 8px;
     border: 1px solid rgba(120,185,255,0.15);
   }
+  .comment-body h4 { margin: 0 0 2px; font-size: 0.9rem; color: #5cc0ff; }
+  .comment-body p { margin: 0; font-size: 0.85rem; color: #bcd9f7; word-break: break-word; }
 
-  .comment-avatar {
-    width: 32px;
-    height: 32px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid rgba(140,200,255,0.7);
-    box-shadow: 0 0 6px rgba(80,170,255,0.5);
-    flex-shrink: 0;
-  }
-
-  .comment-body h4 {
-    margin: 0 0 2px;
-    font-size: 0.9rem;
-    color: #5cc0ff;
-  }
-
-  .comment-body p {
-    margin: 0;
-    font-size: 0.85rem;
-    color: #bcd9f7;
-  }
-
-  .add-comment-box {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
+  .add-comment-box { display: flex; gap: 8px; margin-top: 10px; }
   .comment-input {
     flex-grow: 1;
     background: rgba(5,20,45,0.8);
@@ -190,21 +178,6 @@
     border-radius: 8px;
     padding: 8px 12px;
     color: #fff;
-    font-size: 0.85rem;
-  }
-  .comment-input:focus {
-    outline: none;
-    border-color: #5cc0ff;
-  }
-
-  .comment-submit {
-    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
-    border: none;
-    color: #fff;
-    padding: 0 14px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
     font-size: 0.85rem;
   }
 
@@ -227,157 +200,212 @@
     <p>Qui raccogliamo gli annunci ufficiali, i comunicati e gli aggiornamenti importanti per la community.</p>
   </section>
 
-  <!-- Post 2: Partito Politico (8/10/2026) -->
-  <div class="post-card">
-    <div class="post-date">
-      <span>📅 8 Ottobre 2026</span>
-      <span class="author-tag">Staff Ufficiale</span>
+  <!-- Form di Pubblicazione Annuncio (Visibile SOLO al tuo UID) -->
+  <section id="admin-post-section" class="glass" style="display: none;">
+    <h2>Pubblica Annuncio Ufficiale (Admin)</h2>
+    <div class="create-announcement-form">
+      <input type="text" id="announcement-title" class="input-field" placeholder="Titolo dell'annuncio...">
+      <textarea id="announcement-content" class="input-field" placeholder="Contenuto dell'annuncio..."></textarea>
+      <button class="btn" style="align-self: flex-end;" onclick="publishAnnouncement()">Pubblica Annuncio</button>
     </div>
-    <div class="post-title"><strong>Zeb89 Annuncia il suo nuovo partito: Nuova Repubblica</strong></div>
-    <p class="post-content">Approfondimenti su reddit.</p>
-    
-    <div class="post-footer">
-      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-      <button class="vote-btn" onclick="toggleLike(this)">
-        👍︎ <span class="count-up">25</span>
-      </button>
-    </div>
+  </section>
 
-    <div class="comments-section">
-      <div class="comment-list">
-        <div class="comment-item">
-          <img class="comment-avatar" src="img/smarco28.png" alt="Smarco28">
-          <div class="comment-body">
-            <h4>Smarco28</h4>
-            <p>Zebbone presidente del consiglio?!</p>
-          </div>
-        </div>
-      </div>
-      <div class="add-comment-box">
-        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
-        <button class="comment-submit" onclick="addComment(this)">Invia</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Post 1: Annuncio del sito (6/10/2026) -->
-  <div class="post-card">
-    <div class="post-date">
-      <span>📅 6 Ottobre 2026</span>
-      <span class="author-tag">Staff Ufficiale</span>
-    </div>
-    <div class="post-title"><strong>La Zeb89Fanpage ha finalmente un sito funzionante e sicuro!</strong></div>
-    <p class="post-content">Dopo mesi di lavoro la Zeb89 Fanpage raggiunge uno dei traguardi più difficili! Creare un Hub solido e forte.</p>
-    
-    <div class="post-footer">
-      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-      <button class="vote-btn" onclick="toggleLike(this)">
-        👍︎ <span class="count-up">32</span>
-      </button>
-    </div>
-
-    <div class="comments-section">
-      <div class="comment-list">
-        <div class="comment-item">
-          <img class="comment-avatar" src="botvivo.png" alt="BotVivo">
-          <div class="comment-body">
-            <h4>BotVivo</h4>
-            <p>Congratulazioni a noi</p>
-          </div>
-        </div>
-        <div class="comment-item">
-          <img class="comment-avatar" src="img/smarco28.png" alt="Smarco28">
-          <div class="comment-body">
-            <h4>Smarco28</h4>
-            <p>Auguri!!!</p>
-          </div>
-        </div>
-        <div class="comment-item">
-          <img class="comment-avatar" src="albonz84.jpg" alt="Albonz84">
-          <div class="comment-body">
-            <h4>Albonz84</h4>
-            <p>E' stato duro eh!</p>
-          </div>
-        </div>
-        <div class="comment-item">
-          <img class="comment-avatar" src="albonz84.jpg" alt="Dirtblock">
-          <div class="comment-body">
-            <h4>Dirtblock</h4>
-            <p>Congratulazioni! Grazie di tutto questo lavoro!</p>
-          </div>
-        </div>
-      </div>
-      <div class="add-comment-box">
-        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
-        <button class="comment-submit" onclick="addComment(this)">Invia</button>
-      </div>
-    </div>
+  <!-- Contenitore Annunci da Firebase -->
+  <div id="announcements-container">
+    <div class="glass" style="text-align: center;">Caricamento annunci in corso...</div>
   </div>
 
   <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
 
 </div>
 
-<script>
-  function toggleLike(button) {
-    const countSpan = button.querySelector('.count-up');
-    let currentCount = parseInt(countSpan.textContent);
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    deleteDoc,
+    doc, 
+    query, 
+    orderBy, 
+    onSnapshot,
+    serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    if (button.classList.contains('active')) {
-      button.classList.remove('active');
-      currentCount -= 1;
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHtswW-j0O0tWHHOyJP6QROFvsN_SKHqs",
+    authDomain: "zeb89fanpage-9a3dc.firebaseapp.com",
+    projectId: "zeb89fanpage-9a3dc",
+    storageBucket: "zeb89fanpage-9a3dc.firebasestorage.app",
+    messagingSenderId: "630651020835",
+    appId: "1:630651020835:web:51e425c5e35d782f8e7396",
+    measurementId: "G-578X21KF8L"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const ADMIN_UID = "ZP8lYMOoSFUuPVb55I0rXwiqo8a2"; 
+
+  onAuthStateChanged(auth, (user) => {
+    const adminSec = document.getElementById('admin-post-section');
+    if (user && user.uid === ADMIN_UID) {
+      adminSec.style.display = 'block';
     } else {
-      button.classList.add('active');
-      currentCount += 1;
+      adminSec.style.display = 'none';
     }
-    countSpan.textContent = currentCount;
-  }
+  });
 
-  function toggleComments(btn) {
+  window.publishAnnouncement = async function() {
+    const title = document.getElementById('announcement-title').value.trim();
+    const content = document.getElementById('announcement-content').value.trim();
+
+    if (!title || !content) {
+      alert("Titolo e contenuto sono obbligatori!");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "announcements"), {
+        title,
+        content,
+        author: "Staff Ufficiale",
+        uid: auth.currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById('announcement-title').value = "";
+      document.getElementById('announcement-content').value = "";
+    } catch (e) {
+      alert("Errore durante la pubblicazione.");
+    }
+  };
+
+  window.deleteAnnouncement = async function(id) {
+    if (confirm("Vuoi eliminare questo annuncio?")) {
+      try {
+        await deleteDoc(doc(db, "announcements", id));
+      } catch (e) {
+        alert("Errore durante l'eliminazione.");
+      }
+    }
+  };
+
+  window.addComment = async function(annId, btn) {
+    const input = btn.previousElementSibling;
+    const text = input.value.trim();
+
+    if (!text) return;
+    if (!auth.currentUser) {
+      alert("Devi effettuare l'accesso per commentare!");
+      return;
+    }
+    if (text.includes("http://") || text.includes("https://") || text.includes("www.")) {
+      alert("Nei commenti non è consentito inserire link web!");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "announcements", annId, "comments"), {
+        text,
+        author: auth.currentUser.displayName || "Utente",
+        uid: auth.currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+      input.value = "";
+    } catch (e) {
+      alert("Errore nell'invio del commento.");
+    }
+  };
+
+  window.deleteComment = async function(annId, commId) {
+    try {
+      await deleteDoc(doc(db, "announcements", annId, "comments", commId));
+    } catch (e) {
+      alert("Non puoi eliminare questo commento.");
+    }
+  };
+
+  const q = query(collection(db, "announcements"), orderBy("createdAt", "desc"));
+  onSnapshot(q, (snapshot) => {
+    const container = document.getElementById('announcements-container');
+    container.innerHTML = "";
+
+    if (snapshot.empty) {
+      container.innerHTML = `<div class="glass" style="text-align: center;">Nessun annuncio ufficiale presente.</div>`;
+      return;
+    }
+
+    snapshot.docs.forEach(docSnap => {
+      const post = docSnap.data();
+      const postId = docSnap.id;
+      const dateStr = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
+      const isAdmin = auth.currentUser && auth.currentUser.uid === ADMIN_UID;
+
+      const card = document.createElement('div');
+      card.className = 'post-card';
+      card.innerHTML = `
+        <div class="post-date">
+          <span>📅 ${dateStr} — <span class="author-tag">${escapeHtml(post.author)}</span></span>
+          ${isAdmin ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deleteAnnouncement('${postId}')">Elimina</button>` : ''}
+        </div>
+        <div class="post-title"><strong>${escapeHtml(post.title)}</strong></div>
+        <p class="post-content">${escapeHtml(post.content)}</p>
+        
+        <div class="post-footer">
+          <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+          <button class="vote-btn" onclick="this.classList.toggle('active')">👍︎</button>
+        </div>
+
+        <div class="comments-section">
+          <div id="comments-list-${postId}">Caricamento commenti...</div>
+          <div class="add-comment-box">
+            <input type="text" class="comment-input" placeholder="Scrivi un commento (senza link)..." onkeydown="if(event.key==='Enter') addComment('${postId}', this.nextElementSibling)">
+            <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="addComment('${postId}', this)">Invia</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+
+      onSnapshot(query(collection(db, "announcements", postId, "comments"), orderBy("createdAt", "asc")), (commSnap) => {
+        const commList = document.getElementById(`comments-list-${postId}`);
+        if(commList) {
+          commList.innerHTML = commSnap.empty ? "<p style='font-size:0.8rem; color:#8fb4dc; margin-bottom:8px;'>Nessun commento.</p>" : "";
+          commSnap.docs.forEach(cDoc => {
+            const cData = cDoc.data();
+            const cId = cDoc.id;
+            const canDelete = auth.currentUser && (auth.currentUser.uid === cData.uid || auth.currentUser.uid === ADMIN_UID);
+
+            const item = document.createElement('div');
+            item.className = 'comment-item';
+            item.innerHTML = `
+              <div class="comment-body">
+                <h4>${escapeHtml(cData.author)}</h4>
+                <p>${escapeHtml(cData.text)}</p>
+              </div>
+              ${canDelete ? `<button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteComment('${postId}', '${cId}')">X</button>` : ''}
+            `;
+            commList.appendChild(item);
+          });
+        }
+      });
+    });
+  });
+
+  window.toggleComments = function(btn) {
     const card = btn.closest('.post-card');
     const section = card.querySelector('.comments-section');
     section.classList.toggle('open');
-    if (section.classList.contains('open')) {
-      btn.textContent = '💬 Nascondi commenti';
-    } else {
-      btn.textContent = '💬 Mostra commenti';
-    }
-  }
-
-  function addComment(btn) {
-    const box = btn.closest('.add-comment-box');
-    const input = box.querySelector('.comment-input');
-    const text = input.value.trim();
-
-    if (text !== "") {
-      const card = btn.closest('.post-card');
-      const list = card.querySelector('.comment-list');
-
-      const newComment = document.createElement('div');
-      newComment.className = 'comment-item';
-      newComment.innerHTML = `
-        <img class="comment-avatar" src="albonz84.jpg" alt="Tu">
-        <div class="comment-body">
-          <h4>Tu</h4>
-          <p>${escapeHtml(text)}</p>
-        </div>
-      `;
-      list.appendChild(newComment);
-      input.value = "";
-    }
-  }
-
-  function handleCommentInput(event, input) {
-    if (event.key === 'Enter') {
-      const btn = input.nextElementSibling;
-      addComment(btn);
-    }
-  }
+    btn.textContent = section.classList.contains('open') ? '💬 Nascondi commenti' : '💬 Mostra commenti';
+  };
 
   function escapeHtml(text) {
+    if(!text) return "";
     return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 </script>
-
 </body>
 </html>
