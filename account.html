@@ -176,14 +176,11 @@
   <div id="profile-section" class="profile-card" style="display: none;">
     <img id="profile-avatar-img" class="profile-avatar" src="fotopr1.png" alt="Avatar Utente">
     <h2 class="profile-name" id="user-display-name">Caricamento...</h2>
-    <div class="profile-status">● Utente Attivo</div>
+    <div id="user-role-badge" class="profile-status">● Utente Attivo</div>
 
     <p style="font-size: 0.85rem; color: #8fb4dc; margin-bottom: 8px;">Scegli la tua foto profilo:</p>
     <div class="avatar-selector" id="avatar-options-container">
-      <img src="fotopr1.png" class="avatar-option" onclick="changeAvatar('fotopr1.png')">
-      <img src="fotopr2.png" class="avatar-option" onclick="changeAvatar('fotopr2.png')">
-      <img src="fotopr3.png" class="avatar-option" onclick="changeAvatar('fotopr3.png')">
-      <img src="fotopr4.png" class="avatar-option" onclick="changeAvatar('fotopr4.png')">
+      <!-- Generato dinamicamente via JS -->
     </div>
     
     <div style="margin-top: 15px;">
@@ -220,6 +217,8 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
+  const ADMIN_UID = "ZP8lYMOoSFUuPVb55I0rXwiqo8a2";
+
   function nickToEmail(nick) {
     const cleanNick = nick.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
     return `${cleanNick}@zeb89fanpage.local`;
@@ -237,7 +236,6 @@
     try {
       const email = nickToEmail(nick);
       const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-      // Default foto profilo: fotopr1.png
       await updateProfile(userCred.user, { 
         displayName: nick,
         photoURL: "fotopr1.png" 
@@ -276,7 +274,14 @@
       try {
         await updateProfile(user, { photoURL: avatarPath });
         document.getElementById('profile-avatar-img').src = avatarPath;
-        alert("Foto profilo aggiornata!");
+        // Aggiorna classi CSS selezionate
+        document.querySelectorAll('.avatar-option').forEach(img => {
+          if(img.getAttribute('onclick').includes(avatarPath)) {
+            img.classList.add('selected');
+          } else {
+            img.classList.remove('selected');
+          }
+        });
       } catch (e) {
         alert("Errore durante l'aggiornamento della foto.");
       }
@@ -293,6 +298,7 @@
     const authSec = document.getElementById('auth-section');
     const profSec = document.getElementById('profile-section');
     const nameSpan = document.getElementById('user-display-name');
+    const roleBadge = document.getElementById('user-role-badge');
     const avatarImg = document.getElementById('profile-avatar-img');
     const avatarContainer = document.getElementById('avatar-options-container');
 
@@ -301,10 +307,18 @@
       profSec.style.display = 'block';
       nameSpan.textContent = user.displayName || user.email.split('@')[0];
       
+      // Controlla se è l'admin con il tuo UID
+      if (user.uid === ADMIN_UID) {
+        roleBadge.textContent = "★ Amministratore Ufficiale";
+        roleBadge.style.color = "#ffd700";
+      } else {
+        roleBadge.textContent = "● Utente Attivo";
+        roleBadge.style.color = "#5cc0ff";
+      }
+
       const currentAvatar = user.photoURL || "fotopr1.png";
       avatarImg.src = currentAvatar;
 
-      // Gestione disponibilità speciale per "fronte"
       let avatarsHtml = `
         <img src="fotopr1.png" class="avatar-option ${currentAvatar === 'fotopr1.png' ? 'selected' : ''}" onclick="changeAvatar('fotopr1.png')">
         <img src="fotopr2.png" class="avatar-option ${currentAvatar === 'fotopr2.png' ? 'selected' : ''}" onclick="changeAvatar('fotopr2.png')">
@@ -312,7 +326,8 @@
         <img src="fotopr4.png" class="avatar-option ${currentAvatar === 'fotopr4.png' ? 'selected' : ''}" onclick="changeAvatar('fotopr4.png')">
       `;
 
-      if (user.displayName && user.displayName.toLowerCase() === "fronte") {
+      // Se l'utente è il tuo UID oppure si chiama "fronte", sblocca anche fronte.jpg
+      if (user.uid === ADMIN_UID || (user.displayName && user.displayName.toLowerCase() === "fronte")) {
         avatarsHtml += `<img src="fronte.jpg" class="avatar-option ${currentAvatar === 'fronte.jpg' ? 'selected' : ''}" onclick="changeAvatar('fronte.jpg')" title="Esclusivo Fronte">`;
       }
 
