@@ -63,12 +63,58 @@
     border-radius: 999px;
     background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
     box-shadow: 0 0 12px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+    cursor: pointer;
   }
   .btn:active { filter: brightness(.9); }
 
-  h2 { margin: 0 0 10px; font-size: 1.35rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
-  p { margin: 0 0 10px; color: #bcd9f7; }
+  /* Sezione Auth (Login / Register) */
+  .auth-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .auth-input, .post-input-text, .post-input-textarea {
+    width: 100%;
+    background: rgba(5,20,45,0.8);
+    border: 1px solid rgba(120,185,255,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  .auth-input:focus, .post-input-text:focus, .post-input-textarea:focus {
+    outline: none;
+    border-color: #5cc0ff;
+  }
+  .auth-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .user-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,30,60,0.6);
+    border: 1px solid rgba(120,185,255,0.3);
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 18px;
+  }
+  .user-info { font-weight: 600; color: #5cc0ff; }
 
+  /* Form Nuovo Post */
+  .create-post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .post-input-textarea { resize: vertical; min-height: 80px; }
+
+  /* Cards dei Post */
   .post-card {
     background: rgba(5,20,45,.65);
     border: 1px solid rgba(120,185,255,.35);
@@ -80,16 +126,7 @@
   .author-tag { color: #5cc0ff; font-weight: 600; }
   
   .post-title { margin: 0 0 8px; font-size: 1.15rem; color: #fff; }
-  .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.85rem; line-height: 1.4; opacity: 0.85; }
-
-  .post-image {
-    width: 100%;
-    max-height: 350px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid rgba(120,185,255,.3);
-    margin-bottom: 12px;
-  }
+  .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.9rem; line-height: 1.4; }
 
   .post-footer {
     display: flex;
@@ -129,12 +166,7 @@
     gap: 6px;
     transition: all 0.2s ease;
   }
-
-  .vote-btn:hover {
-    background: rgba(80,170,255,0.25);
-    border-color: rgba(120,185,255,0.6);
-  }
-
+  .vote-btn:hover { background: rgba(80,170,255,0.25); border-color: rgba(120,185,255,0.6); }
   .vote-btn.active {
     background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
     color: #fff;
@@ -149,9 +181,7 @@
     border-top: 1px dashed rgba(120,185,255,0.3);
     padding-top: 12px;
   }
-  .comments-section.open {
-    display: block;
-  }
+  .comments-section.open { display: block; }
 
   .comment-item {
     display: flex;
@@ -164,39 +194,10 @@
     border: 1px solid rgba(120,185,255,0.15);
   }
 
-  .comment-avatar {
-    width: 32px;
-    height: 32px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid rgba(140,200,255,0.7);
-    box-shadow: 0 0 6px rgba(80,170,255,0.5);
-    flex-shrink: 0;
-  }
+  .comment-body h4 { margin: 0 0 2px; font-size: 0.9rem; color: #5cc0ff; }
+  .comment-body p { margin: 0; font-size: 0.85rem; color: #bcd9f7; }
 
-  .comment-body h4 {
-    margin: 0 0 2px;
-    font-size: 0.9rem;
-    color: #5cc0ff;
-  }
-
-  .comment-body p {
-    margin: 0;
-    font-size: 0.85rem;
-    color: #bcd9f7;
-  }
-
-  .comment-body a {
-    color: #5cc0ff;
-    word-break: break-all;
-  }
-
-  .add-comment-box {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
+  .add-comment-box { display: flex; gap: 8px; margin-top: 10px; }
   .comment-input {
     flex-grow: 1;
     background: rgba(5,20,45,0.8);
@@ -206,11 +207,6 @@
     color: #fff;
     font-size: 0.85rem;
   }
-  .comment-input:focus {
-    outline: none;
-    border-color: #5cc0ff;
-  }
-
   .comment-submit {
     background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
     border: none;
@@ -223,6 +219,7 @@
   }
 
   footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+  .error-msg { color: #ff6b6b; font-size: 0.85rem; text-align: center; display: none; }
 </style>
 </head>
 <body>
@@ -236,209 +233,279 @@
     <a class="btn" href="index.html">← Torna alla Home</a>
   </header>
 
-  <section class="glass">
-    <h2>Spazio ai Fan</h2>
-    <p>Qui trovi i post, le clip e i pensieri condivisi direttamente dagli utenti della community.</p>
+  <!-- Box Login / Registrazione con Nickname -->
+  <section id="auth-section" class="glass">
+    <h2 style="text-align: center;">Accesso Community</h2>
+    <p style="text-align: center;">Inserisci il tuo nickname e password per pubblicare e commentare.</p>
+    
+    <div class="auth-box">
+      <input type="text" id="auth-nickname" class="auth-input" placeholder="Nickname">
+      <input type="password" id="auth-password" class="auth-input" placeholder="Password">
+      <div id="auth-error" class="error-msg"></div>
+      <div class="auth-actions">
+        <button class="btn" onclick="loginUser()">Accedi</button>
+        <button class="btn" style="background: transparent;" onclick="registerUser()">Registrati</button>
+      </div>
+    </div>
   </section>
 
-  <!-- Nuovo Post: Smarco28 (10 Ottobre 2026) -->
-  <div class="post-card">
-    <div class="post-date">
-      <span>📅 10 Ottobre 2026</span>
-      <span class="author-tag">Smarco28</span>
-    </div>
-    <div class="post-title"><strong>Il primo video di Zeb su YT</strong></div>
-    <p class="post-content">C'è qualcuno che ricorda il nome del primo video di Zeb su YT?</p>
-    
-    <div class="post-footer">
-      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-      <button class="vote-btn" onclick="toggleLike(this)">👍︎</button>
-    </div>
-
-    <!-- Sezione Commenti con la risposta di Fronte -->
-    <div class="comments-section">
-      <div id="comment-list">
-        <div class="comment-item">
-          <img class="comment-avatar" src="fronte.jpg" alt="Fronte">
-          <div class="comment-body">
-            <h4>Fronte ★</h4>
-            <p>
-              <a href="https://youtu.be/-wvUQD0BXpk?si=kW6Z2JlFJ9-4P9qG" target="_blank">https://youtu.be/-wvUQD0BXpk?si=kW6Z2JlFJ9-4P9qG</a> ecco. è stato duro trovarlo. ricorda che è di Serious Sam
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Casella per aggiungere un commento -->
-      <div class="add-comment-box">
-        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
-        <button class="comment-submit" onclick="addComment(this)">Invia</button>
-      </div>
-    </div>
+  <!-- Pannello Utente Autenticato -->
+  <div id="user-panel" class="user-bar" style="display: none;">
+    <div>Connesso come <span id="current-username" class="user-info"></span></div>
+    <button class="btn" style="padding: 4px 14px; font-size: 0.8rem;" onclick="logoutUser()">Esci</button>
   </div>
 
-  <!-- Post: Chi ricorda Zeb89Talks? (Smarco28) -->
-  <div class="post-card">
-    <div class="post-date">
-      <span>📅 6 Ottobre 2026</span>
-      <span class="author-tag">Smarco28</span>
+  <!-- Form Pubblica Nuovo Post (solo se loggato) -->
+  <section id="create-post-section" class="glass" style="display: none;">
+    <h2>Crea un nuovo post</h2>
+    <div class="create-post-form">
+      <input type="text" id="post-title-input" class="post-input-text" placeholder="Titolo del post...">
+      <textarea id="post-content-input" class="post-input-textarea" placeholder="Cosa ne pensi?"></textarea>
+      <button class="btn" style="align-self: flex-end;" onclick="publishPost()">Pubblica Post</button>
     </div>
-    <div class="post-title"><strong>Chi ricorda Zeb89Talks?</strong></div>
-    <img class="post-image" src="img/communitypost1.png" alt="Zeb89Talks">
-    <p class="post-content">Discussione aperta sul vecchio format che spopolava sul subreddit e nelle live di quel periodo.</p>
-    
-    <div class="post-footer">
-      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-      <button class="vote-btn" onclick="toggleLike(this)">👍︎</button>
-    </div>
+  </section>
 
-    <!-- Sezione Commenti -->
-    <div class="comments-section">
-      <div id="comment-list">
-        <!-- Commento di Fronte -->
-        <div class="comment-item">
-          <img class="comment-avatar" src="fronte.jpg" alt="Fronte">
-          <div class="comment-body">
-            <h4>Fronte ★</h4>
-            <p>Wow si lo ricordo. andava di moda nel periodo twitch 2021.</p>
-          </div>
-        </div>
-
-        <!-- Commento di BotVivo -->
-        <div class="comment-item">
-          <img class="comment-avatar" src="botvivo.png" alt="BotVivo">
-          <div class="comment-body">
-            <h4>BotVivo</h4>
-            <p>Merita di più</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Casella per aggiungere un commento -->
-      <div class="add-comment-box">
-        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
-        <button class="comment-submit" onclick="addComment(this)">Invia</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Post: Adoravo quei video in cui zeb89 andava in giro (BotVivo) -->
-  <div class="post-card">
-    <div class="post-date">
-      <span>📅 6 Ottobre 2026</span>
-      <span class="author-tag">BotVivo</span>
-    </div>
-    <div class="post-title"><strong>adoravo quei video in cui zeb89 andava in giro</strong></div>
-    <img class="post-image" src="communitypost2.png" alt="Zeb89 in giro">
-    <p class="post-content">Quei vlog all'aperto erano leggendari, un mix unico di ironia e situazioni assurde.</p>
-    
-    <div class="post-footer">
-      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-      <button class="vote-btn" onclick="toggleLike(this)">👍︎</button>
-    </div>
-
-    <div class="comments-section">
-      <div id="comment-list">
-        <div class="comment-item">
-          <img class="comment-avatar" src="img/smarco28.png" alt="Smarco28">
-          <div class="comment-body">
-            <h4>Smarco28</h4>
-            <p>E c'era gente che lo incontrava davvero per strada</p>
-          </div>
-        </div>
-      </div>
-      <div class="add-comment-box">
-        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
-        <button class="comment-submit" onclick="addComment(this)">Invia</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Post: Eh! Volevi! (DirtBlock) -->
-  <div class="post-card">
-    <div class="post-date">
-      <span>📅 5 Ottobre 2026</span>
-      <span class="author-tag">DirtBlock</span>
-    </div>
-    <div class="post-title"><strong>"Eh! Volevi!" citazione leggendaria</strong></div>
-    <p class="post-content">Ogni volta che succede qualcosa inaspettato nella vita mi viene spontaneo dirlo. Ormai è un riflesso condizionato.</p>
-    
-    <div class="post-footer">
-      <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-      <button class="vote-btn" onclick="toggleLike(this)">👍︎</button>
-    </div>
-
-    <div class="comments-section">
-      <div id="comment-list">
-        <div class="comment-item">
-          <img class="comment-avatar" src="img/smarco28.png" alt="Smarco28">
-          <div class="comment-body">
-            <h4>Smarco28</h4>
-            <p>Un tormentone che non invecchierà mai!</p>
-          </div>
-        </div>
-      </div>
-      <div class="add-comment-box">
-        <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="handleCommentInput(event, this)">
-        <button class="comment-submit" onclick="addComment(this)">Invia</button>
-      </div>
-    </div>
+  <!-- Contenitore Post da Firebase -->
+  <div id="posts-container">
+    <div class="glass" style="text-align: center;">Caricamento post in corso...</div>
   </div>
 
   <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
 
 </div>
 
-<script>
-  function toggleLike(button) {
-    button.classList.toggle('active');
+<!-- Firebase SDK via CDN -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged,
+    updateProfile 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    getDocs, 
+    query, 
+    orderBy, 
+    onSnapshot,
+    serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHtswW-j0O0tWHHOyJP6QROFvsN_SKHqs",
+    authDomain: "zeb89fanpage-9a3dc.firebaseapp.com",
+    projectId: "zeb89fanpage-9a3dc",
+    storageBucket: "zeb89fanpage-9a3dc.firebasestorage.app",
+    messagingSenderId: "630651020835",
+    appId: "1:630651020835:web:51e425c5e35d782f8e7396",
+    measurementId: "G-578X21KF8L"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Genera una email fittizia dal nickname
+  function nickToEmail(nick) {
+    const cleanNick = nick.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+    return `${cleanNick}@zeb89fanpage.local`;
   }
 
-  function toggleComments(btn) {
+  // Registrazione Utente
+  window.registerUser = async function() {
+    const nick = document.getElementById('auth-nickname').value.trim();
+    const pass = document.getElementById('auth-password').value;
+    const errDiv = document.getElementById('auth-error');
+
+    if (!nick || !pass) {
+      showError("Inserisci nickname e password.");
+      return;
+    }
+
+    try {
+      const email = nickToEmail(nick);
+      const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(userCred.user, { displayName: nick });
+      errDiv.style.display = 'none';
+    } catch (err) {
+      showError("Errore registazione: nickname già preso o password troppo corta.");
+    }
+  };
+
+  // Login Utente
+  window.loginUser = async function() {
+    const nick = document.getElementById('auth-nickname').value.trim();
+    const pass = document.getElementById('auth-password').value;
+
+    if (!nick || !pass) {
+      showError("Inserisci nickname e password.");
+      return;
+    }
+
+    try {
+      const email = nickToEmail(nick);
+      await signInWithEmailAndPassword(auth, email, pass);
+      document.getElementById('auth-error').style.display = 'none';
+    } catch (err) {
+      showError("Nickname o password non validi.");
+    }
+  };
+
+  // Logout Utente
+  window.logoutUser = function() {
+    signOut(auth);
+  };
+
+  function showError(msg) {
+    const errDiv = document.getElementById('auth-error');
+    errDiv.textContent = msg;
+    errDiv.style.display = 'block';
+  }
+
+  // Gestione stato Auth UI
+  onAuthStateChanged(auth, (user) => {
+    const authSec = document.getElementById('auth-section');
+    const userPan = document.getElementById('user-panel');
+    const createSec = document.getElementById('create-post-section');
+    const nameSpan = document.getElementById('current-username');
+
+    if (user) {
+      authSec.style.display = 'none';
+      userPan.style.display = 'flex';
+      createSec.style.display = 'block';
+      nameSpan.textContent = user.displayName || user.email.split('@')[0];
+    } else {
+      authSec.style.display = 'block';
+      userPan.style.display = 'none';
+      createSec.style.display = 'none';
+    }
+  });
+
+  // Pubblicazione Post su Firestore
+  window.publishPost = async function() {
+    const title = document.getElementById('post-title-input').value.trim();
+    const content = document.getElementById('post-content-input').value.trim();
+
+    if (!title || !content) return;
+
+    try {
+      await addDoc(collection(db, "posts"), {
+        title: title,
+        content: content,
+        author: auth.currentUser.displayName || "Anonimo",
+        createdAt: serverTimestamp()
+      });
+      document.getElementById('post-title-input').value = "";
+      document.getElementById('post-content-input').value = "";
+    } catch (e) {
+      alert("Errore durante la pubblicazione del post.");
+    }
+  };
+
+  // Pubblicazione Commento su Firestore
+  window.addFirebaseComment = async function(postId, btn) {
+    const input = btn.previousElementSibling;
+    const text = input.value.trim();
+
+    if (!text || !auth.currentUser) {
+      if(!auth.currentUser) alert("Devi accedere per commentare!");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "posts", postId, "comments"), {
+        text: text,
+        author: auth.currentUser.displayName || "Anonimo",
+        createdAt: serverTimestamp()
+      });
+      input.value = "";
+    } catch (e) {
+      alert("Errore durante l'invio del commento.");
+    }
+  };
+
+  // Listener In Tempo Reale dei Post su Firestore
+  const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  onSnapshot(postsQuery, (snapshot) => {
+    const container = document.getElementById('posts-container');
+    container.innerHTML = "";
+
+    if (snapshot.empty) {
+      container.innerHTML = `<div class="glass" style="text-align: center;">Nessun post presente. Sii il primo a pubblicare!</div>`;
+      return;
+    }
+
+    snapshot.docs.forEach(docSnap => {
+      const post = docSnap.data();
+      const postId = docSnap.id;
+      const dateStr = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
+
+      const card = document.createElement('div');
+      card.className = 'post-card';
+      card.innerHTML = `
+        <div class="post-date">
+          <span>📅 ${dateStr}</span>
+          <span class="author-tag">${escapeHtml(post.author)}</span>
+        </div>
+        <div class="post-title"><strong>${escapeHtml(post.title)}</strong></div>
+        <p class="post-content">${escapeHtml(post.content)}</p>
+        
+        <div class="post-footer">
+          <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+          <button class="vote-btn" onclick="this.classList.toggle('active')">👍︎</button>
+        </div>
+
+        <div class="comments-section">
+          <div id="comments-list-${postId}">Cultura commenti in corso...</div>
+          <div class="add-comment-box">
+            <input type="text" class="comment-input" placeholder="Scrivi un commento...">
+            <button class="comment-submit" onclick="window.addFirebaseComment('${postId}', this)">Invia</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+
+      // Listener per i commenti del singolo post
+      const commentsQuery = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc"));
+      onSnapshot(commentsQuery, (commSnap) => {
+        const commList = document.getElementById(`comments-list-${postId}`);
+        if(commList) {
+          commList.innerHTML = "";
+          commSnap.docs.forEach(cDoc => {
+            const cData = cDoc.data();
+            const item = document.createElement('div');
+            item.className = 'comment-item';
+            item.innerHTML = `
+              <div class="comment-body">
+                <h4>${escapeHtml(cData.author)}</h4>
+                <p>${escapeHtml(cData.text)}</p>
+              </div>
+            `;
+            commList.appendChild(item);
+          });
+        }
+      });
+    });
+  });
+
+  window.toggleComments = function(btn) {
     const card = btn.closest('.post-card');
     const section = card.querySelector('.comments-section');
     section.classList.toggle('open');
-    if (section.classList.contains('open')) {
-      btn.textContent = '💬 Nascondi commenti';
-    } else {
-      btn.textContent = '💬 Mostra commenti';
-    }
-  }
-
-  function addComment(btn) {
-    const box = btn.closest('.add-comment-box');
-    const input = box.querySelector('.comment-input');
-    const text = input.value.trim();
-
-    if (text !== "") {
-      const card = btn.closest('.post-card');
-      const list = card.querySelector('#comment-list');
-
-      const newComment = document.createElement('div');
-      newComment.className = 'comment-item';
-      newComment.innerHTML = `
-        <img class="comment-avatar" src="albonz84.jpg" alt="Tu">
-        <div class="comment-body">
-          <h4>Tu</h4>
-          <p>${escapeHtml(text)}</p>
-        </div>
-      `;
-      list.appendChild(newComment);
-      input.value = "";
-    }
-  }
-
-  function handleCommentInput(event, input) {
-    if (event.key === 'Enter') {
-      const btn = input.nextElementSibling;
-      addComment(btn);
-    }
-  }
+    btn.textContent = section.classList.contains('open') ? '💬 Nascondi commenti' : '💬 Mostra commenti';
+  };
 
   function escapeHtml(text) {
+    if(!text) return "";
     return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 </script>
-
 </body>
 </html>
