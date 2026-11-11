@@ -1,1 +1,266 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Account - Zeb89 Fanpage</title>
+<link rel="icon" href="logo.png">
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    color: #dbeafe;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(80,170,255,.35), transparent 38%),
+      radial-gradient(circle at 90% 35%, rgba(40,120,220,.35), transparent 42%),
+      linear-gradient(160deg, #0a1f3d 0%, #07152b 50%, #030a16 100%);
+    background-attachment: fixed;
+  }
+  .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 18px; }
 
+  .glass {
+    background: linear-gradient(180deg, rgba(120,190,255,.22), rgba(20,50,95,.35));
+    border: 1px solid rgba(140,200,255,.45);
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.6), inset 0 1px 0 rgba(200,230,255,.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+
+  header.glass { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 20px 24px; }
+  
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-small {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid rgba(140,200,255,.7);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(90,180,255,.8);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 1px solid #6cc0ff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
+    box-shadow: 0 0 12px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+    cursor: pointer;
+  }
+  .btn:active { filter: brightness(.9); }
+
+  .auth-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .auth-input {
+    width: 100%;
+    background: rgba(5,20,45,0.8);
+    border: 1px solid rgba(120,185,255,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  .auth-input:focus {
+    outline: none;
+    border-color: #5cc0ff;
+  }
+  .auth-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .profile-card {
+    background: rgba(5,20,45,.75);
+    border: 1px solid rgba(120,185,255,.4);
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .profile-avatar {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid rgba(140,200,255,0.8);
+    box-shadow: 0 0 20px rgba(80,170,255,0.6);
+    margin-bottom: 16px;
+  }
+
+  .profile-name {
+    margin: 0 0 6px;
+    font-size: 1.8rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(90,180,255,0.8);
+  }
+
+  .profile-status {
+    font-size: 0.9rem;
+    color: #5cc0ff;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+  .error-msg { color: #ff6b6b; font-size: 0.85rem; text-align: center; display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="glass">
+    <div class="header-left">
+      <img class="logo-small" src="logo.png" alt="Logo Fanpage">
+      <h1>Mio Account</h1>
+    </div>
+    <a class="btn" href="index.html">← Torna alla Home</a>
+  </header>
+
+  <!-- Form di Accesso/Registrazione -->
+  <section id="auth-section" class="glass">
+    <h2 style="text-align: center;">Accedi o Registrati</h2>
+    <p style="text-align: center;">Usa il tuo nickname e password per entrare nel tuo account.</p>
+    
+    <div class="auth-box">
+      <input type="text" id="auth-nickname" class="auth-input" placeholder="Nickname">
+      <input type="password" id="auth-password" class="auth-input" placeholder="Password">
+      <div id="auth-error" class="error-msg"></div>
+      <div class="auth-actions">
+        <button class="btn" onclick="window.loginUser()">Accedi</button>
+        <button class="btn" style="background: transparent;" onclick="window.registerUser()">Registrati</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scheda Profilo dell'Utente Autenticato -->
+  <div id="profile-section" class="profile-card" style="display: none;">
+    <img class="profile-avatar" src="logo.png" alt="Avatar Utente">
+    <h2 class="profile-name" id="user-display-name">Caricamento...</h2>
+    <div class="profile-status">● Utente Attivo</div>
+    
+    <button class="btn" style="margin-top: 10px;" onclick="window.logoutUser()">Disconnettiti</button>
+  </div>
+
+  <footer>Zeb89 Fanpage · Pagina non ufficiale fatta dai fan</footer>
+
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged,
+    updateProfile 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHtswW-j0O0tWHHOyJP6QROFvsN_SKHqs",
+    authDomain: "zeb89fanpage-9a3dc.firebaseapp.com",
+    projectId: "zeb89fanpage-9a3dc",
+    storageBucket: "zeb89fanpage-9a3dc.firebasestorage.app",
+    messagingSenderId: "630651020835",
+    appId: "1:630651020835:web:51e425c5e35d782f8e7396",
+    measurementId: "G-578X21KF8L"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  function nickToEmail(nick) {
+    const cleanNick = nick.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+    return `${cleanNick}@zeb89fanpage.local`;
+  }
+
+  window.registerUser = async function() {
+    const nick = document.getElementById('auth-nickname').value.trim();
+    const pass = document.getElementById('auth-password').value;
+
+    if (!nick || !pass) {
+      showError("Inserisci nickname e password.");
+      return;
+    }
+
+    try {
+      const email = nickToEmail(nick);
+      const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(userCred.user, { displayName: nick });
+      document.getElementById('auth-error').style.display = 'none';
+    } catch (err) {
+      showError("Errore: Nickname già in uso o password troppo breve (min. 6 caratteri).");
+    }
+  };
+
+  window.loginUser = async function() {
+    const nick = document.getElementById('auth-nickname').value.trim();
+    const pass = document.getElementById('auth-password').value;
+
+    if (!nick || !pass) {
+      showError("Inserisci nickname e password.");
+      return;
+    }
+
+    try {
+      const email = nickToEmail(nick);
+      await signInWithEmailAndPassword(auth, email, pass);
+      document.getElementById('auth-error').style.display = 'none';
+    } catch (err) {
+      showError("Nickname o password errati.");
+    }
+  };
+
+  window.logoutUser = function() {
+    signOut(auth);
+  };
+
+  function showError(msg) {
+    const errDiv = document.getElementById('auth-error');
+    errDiv.textContent = msg;
+    errDiv.style.display = 'block';
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    const authSec = document.getElementById('auth-section');
+    const profSec = document.getElementById('profile-section');
+    const nameSpan = document.getElementById('user-display-name');
+
+    if (user) {
+      authSec.style.display = 'none';
+      profSec.style.display = 'block';
+      nameSpan.textContent = user.displayName || user.email.split('@')[0];
+    } else {
+      authSec.style.display = 'block';
+      profSec.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>
