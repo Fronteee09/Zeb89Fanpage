@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Account - Zeb89 Fanpage</title>
 <link rel="icon" href="logo.png">
+<link rel="manifest" href="manifest.json">
 <style>
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -274,7 +275,6 @@
       try {
         await updateProfile(user, { photoURL: avatarPath });
         document.getElementById('profile-avatar-img').src = avatarPath;
-        // Aggiorna classi CSS selezionate
         document.querySelectorAll('.avatar-option').forEach(img => {
           if(img.getAttribute('onclick').includes(avatarPath)) {
             img.classList.add('selected');
@@ -307,7 +307,6 @@
       profSec.style.display = 'block';
       nameSpan.textContent = user.displayName || user.email.split('@')[0];
       
-      // Controlla se è l'admin con il tuo UID
       if (user.uid === ADMIN_UID) {
         roleBadge.textContent = "★ Amministratore Ufficiale";
         roleBadge.style.color = "#ffd700";
@@ -326,7 +325,6 @@
         <img src="fotopr4.png" class="avatar-option ${currentAvatar === 'fotopr4.png' ? 'selected' : ''}" onclick="changeAvatar('fotopr4.png')">
       `;
 
-      // Se l'utente è il tuo UID oppure si chiama "fronte", sblocca anche fronte.jpg
       if (user.uid === ADMIN_UID || (user.displayName && user.displayName.toLowerCase() === "fronte")) {
         avatarsHtml += `<img src="fronte.jpg" class="avatar-option ${currentAvatar === 'fronte.jpg' ? 'selected' : ''}" onclick="changeAvatar('fronte.jpg')" title="Esclusivo Fronte">`;
       }
