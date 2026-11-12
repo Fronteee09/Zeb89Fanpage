@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Community - Zeb89 Fanpage</title>
 <link rel="icon" href="logo.png">
+<link rel="manifest" href="manifest.json">
 <style>
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -152,6 +153,28 @@
     margin-top: 10px;
   }
 
+  .vote-btn {
+    background: rgba(80,170,255,0.1);
+    border: 1px solid rgba(120,185,255,0.3);
+    color: #bcd9f7;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+  .vote-btn:hover { background: rgba(80,170,255,0.25); border-color: rgba(120,185,255,0.6); }
+  .vote-btn.active {
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 100%);
+    color: #fff;
+    border-color: #8fd0ff;
+    box-shadow: 0 0 10px rgba(80,170,255,0.5);
+  }
+
   .comment-toggle-btn {
     background: transparent;
     border: 1px solid rgba(120,185,255,0.3);
@@ -270,6 +293,8 @@
     addDoc, 
     deleteDoc,
     doc, 
+    setDoc,
+    getDoc,
     query, 
     orderBy, 
     onSnapshot,
@@ -370,6 +395,7 @@
         redditImage: redditImg || null,
         author: auth.currentUser.displayName,
         uid: auth.currentUser.uid,
+        likesCount: 0,
         createdAt: serverTimestamp()
       });
       document.getElementById('post-title-input').value = "";
@@ -388,6 +414,35 @@
       } catch (e) {
         alert("Non hai i permessi per eliminare questo post.");
       }
+    }
+  };
+
+  window.toggleLike = async function(postId) {
+    if (!auth.currentUser) {
+      alert("Devi effettuare l'accesso per mettere Mi piace!");
+      return;
+    }
+
+    const userId = auth.currentUser.uid;
+    const postRef = doc(db, "posts", postId);
+    const likeRef = doc(db, "posts", postId, "likes", userId);
+
+    try {
+      const likeSnap = await getDoc(likeRef);
+      const postSnap = await getDoc(postRef);
+      let currentLikes = postSnap.data().likesCount || 0;
+
+      if (likeSnap.exists()) {
+        await deleteDoc(likeRef);
+        currentLikes = Math.max(0, currentLikes - 1);
+        await setDoc(postRef, { likesCount: currentLikes }, { merge: true });
+      } else {
+        await setDoc(likeRef, { createdAt: serverTimestamp() });
+        currentLikes += 1;
+        await setDoc(postRef, { likesCount: currentLikes }, { merge: true });
+      }
+    } catch (e) {
+      console.error("Errore gestione like:", e);
     }
   };
 
@@ -437,6 +492,7 @@
       const postId = docSnap.id;
       const dateStr = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
       const canDeletePost = auth.currentUser && (auth.currentUser.uid === post.uid || auth.currentUser.uid === ADMIN_UID);
+      const likesCount = post.likesCount || 0;
 
       let mediaHtml = "";
       if (post.redditImage) {
@@ -459,6 +515,9 @@
         
         <div class="post-footer">
           <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
+          <button class="vote-btn" id="like-btn-${postId}" onclick="toggleLike('${postId}')">
+            👍︎ <span id="like-count-${postId}">${likesCount}</span>
+          </button>
         </div>
 
         <div class="comments-section">
@@ -470,6 +529,20 @@
         </div>
       `;
       container.appendChild(card);
+
+      if (auth.currentUser) {
+        const likeDocRef = doc(db, "posts", postId, "likes", auth.currentUser.uid);
+        onSnapshot(likeDocRef, (likeSnap) => {
+          const btnLike = document.getElementById(`like-btn-${postId}`);
+          if (btnLike) {
+            if (likeSnap.exists()) {
+              btnLike.classList.add('active');
+            } else {
+              btnLike.classList.remove('active');
+            }
+          }
+        });
+      }
 
       onSnapshot(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")), (commSnap) => {
         const commList = document.getElementById(`comments-list-${postId}`);
