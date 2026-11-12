@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Annunci e Post - Zeb89 Fanpage</title>
 <link rel="icon" href="logo.png">
+<link rel="manifest" href="manifest.json">
 <style>
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -250,6 +251,8 @@
     addDoc, 
     deleteDoc,
     doc, 
+    setDoc,
+    getDoc,
     query, 
     orderBy, 
     onSnapshot,
@@ -316,6 +319,7 @@
         redditImage: redditImg || null,
         author: "Staff Ufficiale",
         uid: auth.currentUser.uid,
+        likesCount: 0,
         createdAt: serverTimestamp()
       });
       document.getElementById('announcement-title').value = "";
@@ -334,6 +338,36 @@
       } catch (e) {
         alert("Errore durante l'eliminazione.");
       }
+    }
+  };
+
+  // Gestione Like per gli annunci
+  window.toggleLike = async function(annId) {
+    if (!auth.currentUser) {
+      alert("Devi effettuare l'accesso per mettere Mi piace!");
+      return;
+    }
+
+    const userId = auth.currentUser.uid;
+    const annRef = doc(db, "announcements", annId);
+    const likeRef = doc(db, "announcements", annId, "likes", userId);
+
+    try {
+      const likeSnap = await getDoc(likeRef);
+      const annSnap = await getDoc(annRef);
+      let currentLikes = annSnap.data().likesCount || 0;
+
+      if (likeSnap.exists()) {
+        await deleteDoc(likeRef);
+        currentLikes = Math.max(0, currentLikes - 1);
+        await setDoc(annRef, { likesCount: currentLikes }, { merge: true });
+      } else {
+        await setDoc(likeRef, { createdAt: serverTimestamp() });
+        currentLikes += 1;
+        await setDoc(annRef, { likesCount: currentLikes }, { merge: true });
+      }
+    } catch (e) {
+      console.error("Errore gestione like:", e);
     }
   };
 
@@ -387,6 +421,7 @@
       const postId = docSnap.id;
       const dateStr = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
       const isAdmin = auth.currentUser && auth.currentUser.uid === ADMIN_UID;
+      const likesCount = post.likesCount || 0;
 
       let mediaHtml = "";
       if (post.redditImage) {
@@ -409,7 +444,9 @@
         
         <div class="post-footer">
           <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-          <button class="vote-btn" onclick="this.classList.toggle('active')">👍︎</button>
+          <button class="vote-btn" id="like-btn-${postId}" onclick="toggleLike('${postId}')">
+            👍︎ <span id="like-count-${postId}">${likesCount}</span>
+          </button>
         </div>
 
         <div class="comments-section">
@@ -421,6 +458,20 @@
         </div>
       `;
       container.appendChild(card);
+
+      if (auth.currentUser) {
+        const likeDocRef = doc(db, "announcements", postId, "likes", auth.currentUser.uid);
+        onSnapshot(likeDocRef, (likeSnap) => {
+          const btnLike = document.getElementById(`like-btn-${postId}`);
+          if (btnLike) {
+            if (likeSnap.exists()) {
+              btnLike.classList.add('active');
+            } else {
+              btnLike.classList.remove('active');
+            }
+          }
+        });
+      }
 
       onSnapshot(query(collection(db, "announcements", postId, "comments"), orderBy("createdAt", "asc")), (commSnap) => {
         const commList = document.getElementById(`comments-list-${postId}`);
