@@ -261,7 +261,8 @@
     <div class="create-post-form">
       <input type="text" id="post-title-input" class="post-input-text" placeholder="Titolo del post...">
       <textarea id="post-content-input" class="post-input-textarea" placeholder="Corpo del testo..."></textarea>
-      <input type="text" id="post-youtube-input" class="post-input-text" placeholder="Link YouTube (opzionale, es. https://youtu.be/...)">
+      <!-- Campo YouTube visibile solo agli UID autorizzati -->
+      <input type="text" id="post-youtube-input" class="post-input-text" placeholder="Link YouTube (opzionale, es. https://youtu.be/...)" style="display: none;">
       <input type="text" id="post-reddit-img-input" class="post-input-text" placeholder="Link Immagine Reddit (opzionale, es. https://i.redd.it/...)">
       <button class="btn" style="align-self: flex-end;" onclick="publishPost()">Pubblica Post</button>
     </div>
@@ -316,6 +317,13 @@
   const db = getFirestore(app);
 
   const ADMIN_UID = "ZP8lYMOoSFUuPVb55I0rXwiqo8a2";
+  
+  // Lista degli UID autorizzati a pubblicare link video (YouTube) oltre alle immagini Reddit
+  const TRUSTED_MEDIA_UIDS = [
+    "ZP8lYMOoSFUuPVb55I0rXwiqo8a2",
+    "O1JSA1WpzGgI36BWkKA17u3u0uH2",
+    "dpuIezQFvqNNwALmboVIaT6O10X2"
+  ];
 
   function nickToEmail(nick) {
     const cleanNick = nick.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -354,10 +362,29 @@
   }
 
   onAuthStateChanged(auth, (user) => {
-    document.getElementById('auth-section').style.display = user ? 'none' : 'block';
-    document.getElementById('user-panel').style.display = user ? 'flex' : 'none';
-    document.getElementById('create-post-section').style.display = user ? 'block' : 'none';
-    if (user) document.getElementById('current-username').textContent = user.displayName;
+    const authSec = document.getElementById('auth-section');
+    const userPanel = document.getElementById('user-panel');
+    const createPostSec = document.getElementById('create-post-section');
+    const ytInput = document.getElementById('post-youtube-input');
+
+    if (user) {
+      authSec.style.display = 'none';
+      userPanel.style.display = 'flex';
+      createPostSec.style.display = 'block';
+      document.getElementById('current-username').textContent = user.displayName;
+
+      // Mostra il campo YouTube solo se l'utente rientra tra gli UID autorizzati
+      if (TRUSTED_MEDIA_UIDS.includes(user.uid)) {
+        ytInput.style.display = 'block';
+      } else {
+        ytInput.style.display = 'none';
+        ytInput.value = "";
+      }
+    } else {
+      authSec.style.display = 'block';
+      userPanel.style.display = 'none';
+      createPostSec.style.display = 'none';
+    }
   });
 
   function getYouTubeEmbedUrl(url) {
@@ -382,6 +409,13 @@
       return;
     }
 
+    // Controllo di sicurezza: se viene inserito un link YouTube ma l'utente non è autorizzato
+    const isTrusted = TRUSTED_MEDIA_UIDS.includes(auth.currentUser.uid);
+    if (ytUrl && !isTrusted) {
+      alert("Non hai i permessi per pubblicare link video. Puoi inserire solo immagini provenienti da Reddit!");
+      return;
+    }
+
     if (redditImg && !redditImg.includes("redd.it") && !redditImg.includes("reddit.com")) {
       alert("L'immagine deve provenire da Reddit (es. i.redd.it)");
       return;
@@ -391,7 +425,7 @@
       await addDoc(collection(db, "posts"), {
         title,
         content,
-        youtubeUrl: getYouTubeEmbedUrl(ytUrl),
+        youtubeUrl: isTrusted ? getYouTubeEmbedUrl(ytUrl) : null,
         redditImage: redditImg || null,
         author: auth.currentUser.displayName,
         uid: auth.currentUser.uid,
@@ -400,7 +434,8 @@
       });
       document.getElementById('post-title-input').value = "";
       document.getElementById('post-content-input').value = "";
-      document.getElementById('post-youtube-input').value = "";
+      const ytField = document.getElementById('post-youtube-input');
+      if(ytField) ytField.value = "";
       document.getElementById('post-reddit-img-input').value = "";
     } catch (e) {
       alert("Errore nella pubblicazione del post.");
