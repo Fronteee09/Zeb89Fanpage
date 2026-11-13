@@ -200,14 +200,19 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     background: rgba(10,30,60,0.4);
     padding: 8px 12px;
     border-radius: 8px;
     border: 1px solid rgba(120,185,255,0.15);
   }
-  .comment-body h4 { margin: 0 0 2px; font-size: 0.9rem; color: #5cc0ff; }
-  .comment-body p { margin: 0; font-size: 0.85rem; color: #bcd9f7; word-break: break-word; }
+  .reply-item {
+    margin-left: 20px;
+    border-left: 2px solid rgba(92,192,255,0.4);
+    background: rgba(5,20,40,0.5);
+  }
+  .comment-body h4 { margin: 0 0 2px; font-size: 0.85rem; color: #5cc0ff; }
+  .comment-body p { margin: 0 0 4px; font-size: 0.85rem; color: #bcd9f7; word-break: break-word; }
 
   .add-comment-box { display: flex; gap: 8px; margin-top: 10px; }
   .comment-input {
@@ -318,7 +323,6 @@
 
   const ADMIN_UID = "ZP8lYMOoSFUuPVb55I0rXwiqo8a2";
   
-  // Lista degli UID autorizzati a pubblicare link video (YouTube) oltre alle immagini Reddit
   const TRUSTED_MEDIA_UIDS = [
     "ZP8lYMOoSFUuPVb55I0rXwiqo8a2",
     "O1JSA1WpzGgI36BWkKA17u3u0uH2",
@@ -373,7 +377,6 @@
       createPostSec.style.display = 'block';
       document.getElementById('current-username').textContent = user.displayName;
 
-      // Mostra il campo YouTube solo se l'utente rientra tra gli UID autorizzati
       if (TRUSTED_MEDIA_UIDS.includes(user.uid)) {
         ytInput.style.display = 'block';
       } else {
@@ -409,7 +412,6 @@
       return;
     }
 
-    // Controllo di sicurezza: se viene inserito un link YouTube ma l'utente non è autorizzato
     const isTrusted = TRUSTED_MEDIA_UIDS.includes(auth.currentUser.uid);
     if (ytUrl && !isTrusted) {
       alert("Non hai i permessi per pubblicare link video. Puoi inserire solo immagini provenienti da Reddit!");
@@ -496,11 +498,48 @@
         text,
         author: auth.currentUser.displayName,
         uid: auth.currentUser.uid,
+        parentId: null,
         createdAt: serverTimestamp()
       });
       input.value = "";
     } catch (e) {
       alert("Errore nell'invio del commento.");
+    }
+  };
+
+  window.toggleReplyBox = function(postId, commentId) {
+    if (!auth.currentUser) {
+      alert("Devi effettuare l'accesso per rispondere!");
+      return;
+    }
+    const box = document.getElementById(`reply-box-${commentId}`);
+    if (box) {
+      box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+    }
+  };
+
+  window.addFirebaseReply = async function(postId, parentId, btn) {
+    const input = btn.previousElementSibling;
+    const text = input.value.trim();
+
+    if (!text) return;
+    if (text.includes("http://") || text.includes("https://") || text.includes("www.")) {
+      alert("Nei commenti non è consentito inserire link web o immagini!");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "posts", postId, "comments"), {
+        text,
+        author: auth.currentUser.displayName,
+        uid: auth.currentUser.uid,
+        parentId: parentId,
+        createdAt: serverTimestamp()
+      });
+      input.value = "";
+      document.getElementById(`reply-box-${parentId}`).style.display = 'none';
+    } catch (e) {
+      alert("Errore nell'invio della risposta.");
     }
   };
 
@@ -582,24 +621,58 @@
       onSnapshot(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")), (commSnap) => {
         const commList = document.getElementById(`comments-list-${postId}`);
         if(commList) {
-          commList.innerHTML = commSnap.empty ? "<p style='font-size:0.8rem; color:#8fb4dc; margin-bottom:8px;'>Nessun commento.</p>" : "";
-          commSnap.docs.forEach(cDoc => {
-            const cData = cDoc.data();
-            const cId = cDoc.id;
+          const allComments = [];
+          commSnap.forEach(cDoc => {
+            allComments.push({ id: cDoc.id, ...cDoc.data() });
+          });
+
+          commList.innerHTML = allComments.length === 0 ? "<p style='font-size:0.8rem; color:#8fb4dc; margin-bottom:8px;'>Nessun commento.</p>" : "";
+
+          const topComments = allComments.filter(c => !c.parentId);
+
+          topComments.forEach(cData => {
+            const cId = cData.id;
             const canDeleteComment = auth.currentUser && (
               auth.currentUser.uid === cData.uid || 
               auth.currentUser.uid === post.uid || 
               auth.currentUser.uid === ADMIN_UID
             );
 
+            const replies = allComments.filter(c => c.parentId === cId);
+
+            let repliesHtml = '';
+            replies.forEach(rData => {
+              const canDeleteReply = auth.currentUser && (
+                auth.currentUser.uid === rData.uid || 
+                auth.currentUser.uid === post.uid || 
+                auth.currentUser.uid === ADMIN_UID
+              );
+              repliesHtml += `
+                <div class="comment-item reply-item">
+                  <div class="comment-body">
+                    <h4>${escapeHtml(rData.author)}</h4>
+                    <p>${escapeHtml(rData.text)}</p>
+                  </div>
+                  ${canDeleteReply ? `<button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteComment('${postId}', '${rData.id}')">X</button>` : ''}
+                </div>
+              `;
+            });
+
             const item = document.createElement('div');
-            item.className = 'comment-item';
             item.innerHTML = `
-              <div class="comment-body">
-                <h4>${escapeHtml(cData.author)}</h4>
-                <p>${escapeHtml(cData.text)}</p>
+              <div class="comment-item">
+                <div class="comment-body">
+                  <h4>${escapeHtml(cData.author)}</h4>
+                  <p>${escapeHtml(cData.text)}</p>
+                  <button style="background:none; border:none; color:#5cc0ff; font-size:0.75rem; cursor:pointer; padding:2px 0 0;" onclick="toggleReplyBox('${postId}', '${cId}')">Rispondi</button>
+                </div>
+                ${canDeleteComment ? `<button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteComment('${postId}', '${cId}')">X</button>` : ''}
               </div>
-              ${canDeleteComment ? `<button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteComment('${postId}', '${cId}')">X</button>` : ''}
+              <div id="reply-box-${cId}" style="display:none; margin-left: 20px; margin-bottom: 8px;" class="add-comment-box">
+                <input type="text" class="comment-input" placeholder="Rispondi a ${escapeHtml(cData.author)}..." onkeydown="if(event.key==='Enter') addFirebaseReply('${postId}', '${cId}', this.nextElementSibling)">
+                <button class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="addFirebaseReply('${postId}', '${cId}', this)">Invia</button>
+              </div>
+              ${repliesHtml}
             `;
             commList.appendChild(item);
           });
