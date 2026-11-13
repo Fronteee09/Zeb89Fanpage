@@ -72,13 +72,7 @@
     border-color: #ffa8a8;
   }
 
-  .create-announcement-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-  }
-  .input-field {
+  .admin-input, .admin-textarea {
     width: 100%;
     background: rgba(5,20,45,0.8);
     border: 1px solid rgba(120,185,255,0.3);
@@ -86,12 +80,10 @@
     padding: 10px 14px;
     color: #fff;
     font-size: 0.9rem;
+    margin-bottom: 10px;
   }
-  .input-field:focus { outline: none; border-color: #5cc0ff; }
-  textarea.input-field { resize: vertical; min-height: 80px; }
-
-  h2 { margin: 0 0 10px; font-size: 1.35rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
-  p { margin: 0 0 10px; color: #bcd9f7; }
+  .admin-input:focus, .admin-textarea:focus { outline: none; border-color: #5cc0ff; }
+  .admin-textarea { resize: vertical; min-height: 80px; }
 
   .post-card {
     background: rgba(5,20,45,.65);
@@ -104,7 +96,7 @@
   .author-tag { color: #5cc0ff; font-weight: 600; }
   
   .post-title { margin: 0 0 8px; font-size: 1.15rem; color: #fff; }
-  .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.9rem; line-height: 1.4; }
+  .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.9rem; line-height: 1.4; white-space: pre-wrap; }
 
   .post-media {
     margin-bottom: 12px;
@@ -116,12 +108,6 @@
     width: 100%;
     max-height: 350px;
     object-fit: cover;
-    display: block;
-  }
-  .post-media iframe {
-    width: 100%;
-    height: 315px;
-    border: none;
     display: block;
   }
 
@@ -209,30 +195,24 @@
 
   <header class="glass">
     <div class="header-left">
-      <img class="logo-small" src="logo.png" alt="Logo Fanpage">
-      <h1>Annunci & Post</h1>
+      <img class="logo-small" src="logo.png" alt="Logo Annunci">
+      <h1>Annunci & Post Ufficiali</h1>
     </div>
     <a class="btn" href="index.html">← Torna alla Home</a>
   </header>
 
-  <section class="glass">
-    <h2>Ultime novità dallo Staff</h2>
-    <p>Qui raccogliamo gli annunci ufficiali, i comunicati e gli aggiornamenti importanti per la community.</p>
-  </section>
-
-  <!-- Form di Pubblicazione Annuncio (Visibile SOLO al tuo UID admin) -->
-  <section id="admin-post-section" class="glass" style="display: none;">
-    <h2>Pubblica Annuncio Ufficiale (Admin)</h2>
-    <div class="create-announcement-form">
-      <input type="text" id="announcement-title" class="input-field" placeholder="Titolo dell'annuncio...">
-      <textarea id="announcement-content" class="input-field" placeholder="Contenuto dell'annuncio..."></textarea>
-      <input type="text" id="announcement-youtube" class="input-field" placeholder="Link YouTube (opzionale, es. https://youtu.be/...)">
-      <input type="text" id="announcement-reddit" class="input-field" placeholder="Link Immagine Reddit (opzionale, es. https://i.redd.it/...)">
+  <!-- Pannello Creazione Admin (Visibile solo al tuo UID) -->
+  <section id="admin-announcement-section" class="glass" style="display: none;">
+    <h2>Crea Annuncio Ufficiale (Admin)</h2>
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+      <input type="text" id="new-title" class="admin-input" placeholder="Titolo dell'annuncio...">
+      <textarea id="new-content" class="admin-textarea" placeholder="Scrivi il contenuto dell'annuncio..."></textarea>
+      <input type="text" id="new-img" class="admin-input" placeholder="Link immagine Reddit opzionale (es. https://i.redd.it/...)">
       <button class="btn" style="align-self: flex-end;" onclick="publishAnnouncement()">Pubblica Annuncio</button>
     </div>
   </section>
 
-  <!-- Contenitore Annunci da Firebase -->
+  <!-- Lista Annunci -->
   <div id="announcements-container">
     <div class="glass" style="text-align: center;">Caricamento annunci in corso...</div>
   </div>
@@ -273,10 +253,10 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  const ADMIN_UID = "ZP8lYMOoSFUuPVb55I0rXwiqo8a2"; 
+  const ADMIN_UID = "ZP8lYMOoSFUuPVb55I0rXwiqo8a2";
 
   onAuthStateChanged(auth, (user) => {
-    const adminSec = document.getElementById('admin-post-section');
+    const adminSec = document.getElementById('admin-announcement-section');
     if (user && user.uid === ADMIN_UID) {
       adminSec.style.display = 'block';
     } else {
@@ -284,29 +264,17 @@
     }
   });
 
-  function getYouTubeEmbedUrl(url) {
-    if (!url) return null;
-    let videoId = "";
-    if (url.includes("youtu.be/")) {
-      videoId = url.split("youtu.be/")[1]?.split("?")[0];
-    } else if (url.includes("watch?v=")) {
-      videoId = url.split("watch?v=")[1]?.split("&")[0];
-    }
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-  }
-
   window.publishAnnouncement = async function() {
-    const title = document.getElementById('announcement-title').value.trim();
-    const content = document.getElementById('announcement-content').value.trim();
-    const ytUrl = document.getElementById('announcement-youtube').value.trim();
-    const redditImg = document.getElementById('announcement-reddit').value.trim();
+    const title = document.getElementById('new-title').value.trim();
+    const content = document.getElementById('new-content').value.trim();
+    const img = document.getElementById('new-img').value.trim();
 
     if (!title || !content) {
-      alert("Titolo e contenuto sono obbligatori!");
+      alert("Il titolo e il contenuto sono obbligatori!");
       return;
     }
 
-    if (redditImg && !redditImg.includes("redd.it") && !redditImg.includes("reddit.com")) {
+    if (img && !img.includes("redd.it") && !img.includes("reddit.com")) {
       alert("L'immagine deve provenire da Reddit (es. i.redd.it)");
       return;
     }
@@ -315,24 +283,20 @@
       await addDoc(collection(db, "announcements"), {
         title,
         content,
-        youtubeUrl: getYouTubeEmbedUrl(ytUrl),
-        redditImage: redditImg || null,
-        author: "Staff Ufficiale",
-        uid: auth.currentUser.uid,
+        redditImage: img || null,
         likesCount: 0,
         createdAt: serverTimestamp()
       });
-      document.getElementById('announcement-title').value = "";
-      document.getElementById('announcement-content').value = "";
-      document.getElementById('announcement-youtube').value = "";
-      document.getElementById('announcement-reddit').value = "";
+      document.getElementById('new-title').value = "";
+      document.getElementById('new-content').value = "";
+      document.getElementById('new-img').value = "";
     } catch (e) {
-      alert("Errore durante la pubblicazione.");
+      alert("Errore durante la pubblicazione dell'annuncio.");
     }
   };
 
   window.deleteAnnouncement = async function(id) {
-    if (confirm("Vuoi eliminare questo annuncio?")) {
+    if (confirm("Vuoi davvero eliminare questo annuncio?")) {
       try {
         await deleteDoc(doc(db, "announcements", id));
       } catch (e) {
@@ -341,16 +305,15 @@
     }
   };
 
-  // Gestione Like per gli annunci
-  window.toggleLike = async function(annId) {
+  window.toggleLike = async function(announcementId) {
     if (!auth.currentUser) {
-      alert("Devi effettuare l'accesso per mettere Mi piace!");
+      alert("Devi effettuare l'accesso (tramite account.html o community.html) per mettere Mi piace!");
       return;
     }
 
     const userId = auth.currentUser.uid;
-    const annRef = doc(db, "announcements", annId);
-    const likeRef = doc(db, "announcements", annId, "likes", userId);
+    const annRef = doc(db, "announcements", announcementId);
+    const likeRef = doc(db, "announcements", announcementId, "likes", userId);
 
     try {
       const likeSnap = await getDoc(likeRef);
@@ -371,22 +334,23 @@
     }
   };
 
-  window.addComment = async function(annId, btn) {
-    const input = btn.previousElementSibling;
-    const text = input.value.trim();
-
-    if (!text) return;
+  window.addFirebaseComment = async function(announcementId, btn) {
     if (!auth.currentUser) {
       alert("Devi effettuare l'accesso per commentare!");
       return;
     }
+
+    const input = btn.previousElementSibling;
+    const text = input.value.trim();
+
+    if (!text) return;
     if (text.includes("http://") || text.includes("https://") || text.includes("www.")) {
       alert("Nei commenti non è consentito inserire link web o immagini!");
       return;
     }
 
     try {
-      await addDoc(collection(db, "announcements", annId, "comments"), {
+      await addDoc(collection(db, "announcements", announcementId, "comments"), {
         text,
         author: auth.currentUser.displayName || "Utente",
         uid: auth.currentUser.uid,
@@ -398,9 +362,9 @@
     }
   };
 
-  window.deleteComment = async function(annId, commId) {
+  window.deleteComment = async function(announcementId, commentId) {
     try {
-      await deleteDoc(doc(db, "announcements", annId, "comments", commId));
+      await deleteDoc(doc(db, "announcements", announcementId, "comments", commentId));
     } catch (e) {
       alert("Non puoi eliminare questo commento.");
     }
@@ -412,57 +376,51 @@
     container.innerHTML = "";
 
     if (snapshot.empty) {
-      container.innerHTML = `<div class="glass" style="text-align: center;">Nessun annuncio ufficiale presente.</div>`;
+      container.innerHTML = `<div class="glass" style="text-align: center;">Nessun annuncio presente.</div>`;
       return;
     }
 
     snapshot.docs.forEach(docSnap => {
-      const post = docSnap.data();
-      const postId = docSnap.id;
-      const dateStr = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
-      const isAdmin = auth.currentUser && auth.currentUser.uid === ADMIN_UID;
-      const likesCount = post.likesCount || 0;
+      const item = docSnap.data();
+      const id = docSnap.id;
+      const dateStr = item.createdAt ? new Date(item.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
+      const isUserAdmin = auth.currentUser && auth.currentUser.uid === ADMIN_UID;
+      const likesCount = item.likesCount || 0;
 
-      let mediaHtml = "";
-      if (post.redditImage) {
-        mediaHtml += `<div class="post-media"><img src="${escapeHtml(post.redditImage)}" alt="Immagine Reddit"></div>`;
-      }
-      if (post.youtubeUrl) {
-        mediaHtml += `<div class="post-media"><iframe src="${post.youtubeUrl}" allowfullscreen></iframe></div>`;
-      }
+      let mediaHtml = item.redditImage ? `<div class="post-media"><img src="${escapeHtml(item.redditImage)}" alt="Immagine Annuncio"></div>` : "";
 
       const card = document.createElement('div');
       card.className = 'post-card';
       card.innerHTML = `
         <div class="post-date">
-          <span>📅 ${dateStr} — <span class="author-tag">${escapeHtml(post.author)}</span></span>
-          ${isAdmin ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deleteAnnouncement('${postId}')">Elimina</button>` : ''}
+          <span>📅 ${dateStr} — <span class="author-tag">Zeb89 Fanpage Official</span></span>
+          ${isUserAdmin ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deleteAnnouncement('${id}')">Elimina</button>` : ''}
         </div>
-        <div class="post-title"><strong>${escapeHtml(post.title)}</strong></div>
-        <p class="post-content">${escapeHtml(post.content)}</p>
+        <div class="post-title"><strong>${escapeHtml(item.title)}</strong></div>
+        <p class="post-content">${escapeHtml(item.content)}</p>
         ${mediaHtml}
-        
+
         <div class="post-footer">
           <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
-          <button class="vote-btn" id="like-btn-${postId}" onclick="toggleLike('${postId}')">
-            👍︎ <span id="like-count-${postId}">${likesCount}</span>
+          <button class="vote-btn" id="like-btn-${id}" onclick="toggleLike('${id}')">
+            👍︎ <span id="like-count-${id}">${likesCount}</span>
           </button>
         </div>
 
         <div class="comments-section">
-          <div id="comments-list-${postId}">Caricamento commenti...</div>
+          <div id="comments-list-${id}">Caricamento...</div>
           <div class="add-comment-box">
-            <input type="text" class="comment-input" placeholder="Scrivi un commento (senza link)..." onkeydown="if(event.key==='Enter') addComment('${postId}', this.nextElementSibling)">
-            <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="addComment('${postId}', this)">Invia</button>
+            <input type="text" class="comment-input" placeholder="Scrivi un commento (senza link)..." onkeydown="if(event.key==='Enter') addFirebaseComment('${id}', this.nextElementSibling)">
+            <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="addFirebaseComment('${id}', this)">Invia</button>
           </div>
         </div>
       `;
       container.appendChild(card);
 
       if (auth.currentUser) {
-        const likeDocRef = doc(db, "announcements", postId, "likes", auth.currentUser.uid);
+        const likeDocRef = doc(db, "announcements", id, "likes", auth.currentUser.uid);
         onSnapshot(likeDocRef, (likeSnap) => {
-          const btnLike = document.getElementById(`like-btn-${postId}`);
+          const btnLike = document.getElementById(`like-btn-${id}`);
           if (btnLike) {
             if (likeSnap.exists()) {
               btnLike.classList.add('active');
@@ -473,25 +431,28 @@
         });
       }
 
-      onSnapshot(query(collection(db, "announcements", postId, "comments"), orderBy("createdAt", "asc")), (commSnap) => {
-        const commList = document.getElementById(`comments-list-${postId}`);
+      onSnapshot(query(collection(db, "announcements", id, "comments"), orderBy("createdAt", "asc")), (commSnap) => {
+        const commList = document.getElementById(`comments-list-${id}`);
         if(commList) {
           commList.innerHTML = commSnap.empty ? "<p style='font-size:0.8rem; color:#8fb4dc; margin-bottom:8px;'>Nessun commento.</p>" : "";
           commSnap.docs.forEach(cDoc => {
             const cData = cDoc.data();
             const cId = cDoc.id;
-            const canDelete = auth.currentUser && (auth.currentUser.uid === cData.uid || auth.currentUser.uid === ADMIN_UID);
+            const canDeleteComment = auth.currentUser && (
+              auth.currentUser.uid === cData.uid || 
+              auth.currentUser.uid === ADMIN_UID
+            );
 
-            const item = document.createElement('div');
-            item.className = 'comment-item';
-            item.innerHTML = `
+            const commItem = document.createElement('div');
+            commItem.className = 'comment-item';
+            commItem.innerHTML = `
               <div class="comment-body">
                 <h4>${escapeHtml(cData.author)}</h4>
                 <p>${escapeHtml(cData.text)}</p>
               </div>
-              ${canDelete ? `<button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteComment('${postId}', '${cId}')">X</button>` : ''}
+              ${canDeleteComment ? `<button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteComment('${id}', '${cId}')">X</button>` : ''}
             `;
-            commList.appendChild(item);
+            commList.appendChild(commItem);
           });
         }
       });
