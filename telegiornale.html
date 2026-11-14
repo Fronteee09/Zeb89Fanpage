@@ -124,9 +124,16 @@
     border: none;
   }
   .tv-placeholder {
-    text-align: center;
-    color: #8fb4dc;
-    padding: 20px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tv-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* Overlay sblocco audio */
@@ -267,8 +274,7 @@
         <button class="btn" onclick="unlockStudio()">🔊 Entra nello Studio Live</button>
       </div>
       <div id="tv-content" class="tv-placeholder">
-        <h2>📺 Nessuna trasmissione in corso</h2>
-        <p>Resta sintonizzato: appena la regia avvia la diretta, il segnale apparirà qui automaticamente.</p>
+        <img src="nessunadiretta.png" alt="Nessuna Diretta">
       </div>
     </div>
 
@@ -420,28 +426,34 @@
 
   window.triggerSound = async function(soundFile) {
     if (!isCurrentUserMod) return;
-    await setDoc(regiaRef, {
-      soundFile: soundFile,
-      soundTriggeredAt: Date.now()
-    }, { merge: true });
+    try {
+      await setDoc(regiaRef, {
+        soundFile: soundFile,
+        soundTriggeredAt: Date.now()
+      }, { merge: true });
+    } catch(e) { console.error("Errore suono:", e); alert("Impossibile inviare il suono. Controlla le regole Firebase."); }
   };
 
   window.updateBanner = async function() {
     if (!isCurrentUserMod) return;
     const text = document.getElementById('regia-banner-input').value.trim();
     if (!text) return;
-    await setDoc(regiaRef, { bannerText: text }, { merge: true });
-    document.getElementById('regia-banner-input').value = "";
+    try {
+      await setDoc(regiaRef, { bannerText: text }, { merge: true });
+      document.getElementById('regia-banner-input').value = "";
+    } catch(e) { console.error("Errore striscione:", e); }
   };
 
   window.sendMedia = async function(type, url) {
     if (!isCurrentUserMod) return;
-    await setDoc(regiaRef, {
-      isLive: true,
-      mediaType: type,
-      mediaUrl: url,
-      mediaTriggeredAt: Date.now()
-    }, { merge: true });
+    try {
+      await setDoc(regiaRef, {
+        isLive: true,
+        mediaType: type,
+        mediaUrl: url,
+        mediaTriggeredAt: Date.now()
+      }, { merge: true });
+    } catch(e) { console.error("Errore media:", e); alert("Errore invio media. Controlla le regole Firebase."); }
   };
 
   window.sendCustomMedia = async function() {
@@ -493,10 +505,19 @@
   };
 
   onSnapshot(regiaRef, (docSnap) => {
-    if (!docSnap.exists()) return;
+    const tvContent = document.getElementById('tv-content');
+    const badge = document.getElementById('status-badge');
+
+    if (!docSnap.exists()) {
+      // Se il documento non esiste ancora, mostra l'immagine predefinita
+      tvContent.innerHTML = `<img src="nessunadiretta.png" alt="Nessuna Diretta">`;
+      badge.textContent = "OFFLINE";
+      badge.classList.add('offline');
+      return;
+    }
+
     const data = docSnap.data();
 
-    const badge = document.getElementById('status-badge');
     if (data.isLive) {
       badge.textContent = "IN ONDA";
       badge.classList.remove('offline');
@@ -523,16 +544,11 @@
       currentActiveAudio.currentTime = 0;
     }
 
-    if (data.mediaTriggeredAt !== lastMediaTimestamp) {
+    if (data.mediaTriggeredAt !== lastMediaTimestamp || tvContent.innerHTML.trim() === "") {
       lastMediaTimestamp = data.mediaTriggeredAt;
-      const tvContent = document.getElementById('tv-content');
 
       if (!data.isLive || data.mediaType === "none" || !data.mediaUrl) {
-        tvContent.innerHTML = `
-          <div class="tv-placeholder">
-            <h2>📺 Trasmissione terminata o in pausa</h2>
-            <p>Attendi il prossimo collegamento della regia.</p>
-          </div>`;
+        tvContent.innerHTML = `<img src="nessunadiretta.png" alt="Nessuna Diretta">`;
       } else if (data.mediaType === "sigla" || data.mediaType === "video") {
         tvContent.innerHTML = `<video src="${escapeHtml(data.mediaUrl)}" autoplay playsinline ${audioUnlocked ? '' : 'muted'} controls></video>`;
       } else if (data.mediaType === "youtube") {
