@@ -37,7 +37,7 @@
 
   header.glass { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 20px 24px; }
   
-  .header-left { display: flex; align-items: center; gap: 14px; }
+  .header-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .logo-small {
     width: 50px;
     height: 50px;
@@ -48,12 +48,13 @@
 
   h1 {
     margin: 0;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     color: #fff;
     text-shadow: 0 0 10px rgba(90,180,255,.8);
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
   }
 
   .live-badge {
@@ -75,6 +76,15 @@
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
+  }
+
+  .viewer-badge {
+    font-size: 0.75rem;
+    background: rgba(10,30,60,0.7);
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(120,185,255,0.3);
+    color: #8fb4dc;
   }
 
   .btn {
@@ -229,6 +239,8 @@
     font-size: 0.85rem;
     color: #8fb4dc;
     margin-bottom: 6px;
+    flex-wrap: wrap;
+    gap: 6px;
   }
   .summary-title { margin: 0 0 6px; font-size: 1.1rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
   .summary-text { margin: 0; color: #bcd9f7; font-size: 0.9rem; word-break: break-word; }
@@ -280,7 +292,10 @@
   <header class="glass">
     <div class="header-left">
       <img class="logo-small" src="logo.png" alt="Logo TG">
-      <h1>Telegiornale <span id="status-badge" class="live-badge offline">OFFLINE</span></h1>
+      <h1>Telegiornale 
+        <span id="status-badge" class="live-badge offline">OFFLINE</span>
+        <span id="viewer-count" class="viewer-badge">👥 0 spettatori</span>
+      </h1>
     </div>
     <a class="btn" href="index.html">← Torna alla Home</a>
   </header>
@@ -423,6 +438,27 @@
   let isCurrentUserMod = false;
   let isCurrentUserBanned = false;
   let currentActiveAudio = null;
+
+  // Gestione spettatori in tempo reale
+  const viewerId = '_' + Math.random().toString(36).substr(2, 9);
+  const viewerRef = doc(db, "tg_viewers", viewerId);
+
+  async function registerViewer() {
+    try { await setDoc(viewerRef, { joinedAt: Date.now() }); } catch(e) {}
+  }
+  registerViewer();
+
+  window.addEventListener('beforeunload', () => {
+    deleteDoc(viewerRef).catch(() => {});
+  });
+
+  onSnapshot(collection(db, "tg_viewers"), (snapshot) => {
+    const count = snapshot.size;
+    const badge = document.getElementById('viewer-count');
+    if (badge) {
+      badge.textContent = `👥 ${count} spettator${count === 1 ? 'e' : 'i'}`;
+    }
+  });
 
   window.unlockStudio = function() {
     audioUnlocked = true;
