@@ -187,7 +187,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 10px;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
   }
   .regia-input-row {
     display: flex;
@@ -289,8 +289,11 @@
       <button class="btn btn-sound" onclick="triggerSound('dongdong.mp3')">🔔 Dong Dong</button>
       <button class="btn btn-sound" onclick="triggerSound('ehvolevi.mp3')">😏 Eh Volevi!</button>
     </div>
+    <div style="margin-top: 8px;">
+      <button class="btn btn-danger" style="width: 100%;" onclick="stopAudioAndMedia()">🔇 Interrompi Audio / Video in Onda</button>
+    </div>
 
-    <p style="font-size:0.85rem; color:#8fb4dc; margin-bottom:8px;"><strong>2. Striscione Scorrevole:</strong></p>
+    <p style="font-size:0.85rem; color:#8fb4dc; margin: 12px 0 8px;"><strong>2. Striscione Scorrevole:</strong></p>
     <div class="regia-input-row">
       <input type="text" id="regia-banner-input" class="regia-input" placeholder="Scrivi il testo dello striscione...">
       <button class="btn" onclick="updateBanner()">Aggiorna Striscione</button>
@@ -360,7 +363,6 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // Gli stessi UID autorizzati della community
   const REGIA_UIDS = [
     "ZP8lYMOoSFUuPVb55I0rXwiqo8a2",
     "O1JSA1WpzGgI36BWkKA17u3u0uH2",
@@ -372,8 +374,8 @@
   let lastMediaTimestamp = 0;
   let isCurrentUserMod = false;
   let isCurrentUserBanned = false;
+  let currentActiveAudio = null;
 
-  // Sblocca l'audio al clic dell'utente
   window.unlockStudio = function() {
     audioUnlocked = true;
     document.getElementById('audio-overlay').style.display = 'none';
@@ -384,7 +386,6 @@
     }
   };
 
-  // Controllo utente loggato + stato Ban
   onAuthStateChanged(auth, (user) => {
     const regiaPanel = document.getElementById('regia-panel');
     const chatControls = document.getElementById('chat-controls');
@@ -396,7 +397,6 @@
       regiaPanel.style.display = isCurrentUserMod ? 'block' : 'none';
       loginWarn.style.display = 'none';
 
-      // Controlla in tempo reale se l'utente è bannato
       onSnapshot(doc(db, "tg_banned", user.uid), (banSnap) => {
         isCurrentUserBanned = banSnap.exists();
         if (isCurrentUserBanned && !isCurrentUserMod) {
@@ -416,7 +416,6 @@
     }
   });
 
-  // --- FUNZIONI DI REGIA (SOLO MOD) ---
   const regiaRef = doc(db, "telegiornale", "regia");
 
   window.triggerSound = async function(soundFile) {
@@ -468,6 +467,21 @@
     document.getElementById('regia-media-input').value = "";
   };
 
+  window.stopAudioAndMedia = async function() {
+    if (!isCurrentUserMod) return;
+    if (currentActiveAudio) {
+      currentActiveAudio.pause();
+      currentActiveAudio.currentTime = 0;
+    }
+    await setDoc(regiaRef, {
+      soundFile: "",
+      soundTriggeredAt: Date.now(),
+      mediaType: "none",
+      mediaUrl: "",
+      mediaTriggeredAt: Date.now()
+    }, { merge: true });
+  };
+
   window.stopBroadcast = async function() {
     if (!isCurrentUserMod) return;
     await setDoc(regiaRef, {
@@ -478,12 +492,10 @@
     }, { merge: true });
   };
 
-  // --- ASCOLTO IN TEMPO REALE DELLO STUDIO TV ---
   onSnapshot(regiaRef, (docSnap) => {
     if (!docSnap.exists()) return;
     const data = docSnap.data();
 
-    // 1. Aggiorna Badge Live
     const badge = document.getElementById('status-badge');
     if (data.isLive) {
       badge.textContent = "IN ONDA";
@@ -493,22 +505,24 @@
       badge.classList.add('offline');
     }
 
-    // 2. Aggiorna Striscione
     if (data.bannerText) {
       document.getElementById('tg-banner-text').textContent = data.bannerText;
     }
 
-    // 3. Riproduci Effetti Sonori
     if (data.soundFile && data.soundTriggeredAt && data.soundTriggeredAt !== lastSoundTimestamp) {
-      // Evita di suonare vecchi suoni appena entri nella pagina (tolleranza 5 secondi)
       if (Date.now() - data.soundTriggeredAt < 5000 && audioUnlocked) {
-        const audio = new Audio(data.soundFile);
-        audio.play().catch(e => console.log("Audio bloccato:", e));
+        if (currentActiveAudio) {
+          currentActiveAudio.pause();
+        }
+        currentActiveAudio = new Audio(data.soundFile);
+        currentActiveAudio.play().catch(e => console.log("Audio bloccato:", e));
       }
       lastSoundTimestamp = data.soundTriggeredAt;
+    } else if (!data.soundFile && currentActiveAudio) {
+      currentActiveAudio.pause();
+      currentActiveAudio.currentTime = 0;
     }
 
-    // 4. Aggiorna Schermo TV (Sigla, Video, Immagine o YouTube)
     if (data.mediaTriggeredAt !== lastMediaTimestamp) {
       lastMediaTimestamp = data.mediaTriggeredAt;
       const tvContent = document.getElementById('tv-content');
@@ -529,7 +543,6 @@
     }
   });
 
-  // --- SISTEMA CHAT E MODERAZIONE ---
   window.sendChatMessage = async function() {
     if (!auth.currentUser || isCurrentUserBanned) return;
     const input = document.getElementById('chat-input');
