@@ -318,6 +318,12 @@
       <button class="btn btn-danger" style="width: 100%;" onclick="stopAudioAndMedia()">🔇 Interrompi Audio / Video in Onda</button>
     </div>
 
+    <p style="font-size:0.85rem; color:#ffd43b; margin: 14px 0 8px;"><strong>🗣️ Sintesi Vocale TTS (Leggi ad alta voce):</strong></p>
+    <div class="regia-input-row">
+      <input type="text" id="regia-tts-input" class="regia-input" placeholder="Scrivi una frase da far pronunciare in diretta...">
+      <button class="btn" style="background: linear-gradient(180deg, #ff922b 0%, #f76707 100%); border-color:#ffd8a8;" onclick="sendTTS()">Fai Parlare</button>
+    </div>
+
     <p style="font-size:0.85rem; color:#8fb4dc; margin: 12px 0 8px;"><strong>2. Striscione Scorrevole:</strong></p>
     <div class="regia-input-row">
       <input type="text" id="regia-banner-input" class="regia-input" placeholder="Scrivi il testo dello striscione...">
@@ -413,6 +419,7 @@
   let audioUnlocked = false;
   let lastSoundTimestamp = 0;
   let lastMediaTimestamp = 0;
+  let lastTtsTimestamp = 0;
   let isCurrentUserMod = false;
   let isCurrentUserBanned = false;
   let currentActiveAudio = null;
@@ -472,6 +479,26 @@
     document.getElementById('regia-banner-input').value = "";
   };
 
+  window.sendTTS = async function() {
+    if (!isCurrentUserMod) return;
+    const text = document.getElementById('regia-tts-input').value.trim();
+    if (!text) return;
+    await setDoc(regiaRef, { ttsText: text, ttsTimestamp: Date.now() }, { merge: true });
+    document.getElementById('regia-tts-input').value = "";
+  };
+
+  function speakText(text) {
+    if (!audioUnlocked || !text) return;
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'it-IT';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
   window.sendMedia = async function(type, url) {
     if (!isCurrentUserMod) return;
     await setDoc(regiaRef, { isLive: true, mediaType: type, mediaUrl: url, mediaTriggeredAt: Date.now() }, { merge: true });
@@ -514,7 +541,6 @@
     await setDoc(regiaRef, { isLive: false, mediaType: "none", mediaUrl: "", mediaTriggeredAt: Date.now() }, { merge: true });
   };
 
-  // Pubblica Schedina Riassunto
   window.publishSummary = async function() {
     if (!isCurrentUserMod) return;
     const title = document.getElementById('summary-title-input').value.trim();
@@ -547,7 +573,6 @@
     }
   };
 
-  // Ascolto stato TV
   onSnapshot(regiaRef, (docSnap) => {
     const tvContent = document.getElementById('tv-content');
     const badge = document.getElementById('status-badge');
@@ -585,6 +610,13 @@
       currentActiveAudio.currentTime = 0;
     }
 
+    if (data.ttsText && data.ttsTimestamp && data.ttsTimestamp !== lastTtsTimestamp) {
+      if (Date.now() - data.ttsTimestamp < 5000) {
+        speakText(data.ttsText);
+      }
+      lastTtsTimestamp = data.ttsTimestamp;
+    }
+
     if (data.mediaTriggeredAt !== lastMediaTimestamp || tvContent.innerHTML.trim() === "") {
       lastMediaTimestamp = data.mediaTriggeredAt;
 
@@ -600,7 +632,6 @@
     }
   });
 
-  // Ascolto Schedine / Riassunti
   const summariesQuery = query(collection(db, "tg_summaries"), orderBy("createdAt", "desc"));
   onSnapshot(summariesQuery, (snapshot) => {
     const container = document.getElementById('summaries-container');
@@ -630,7 +661,6 @@
     });
   });
 
-  // Chat Live
   window.sendChatMessage = async function() {
     if (!auth.currentUser || isCurrentUserBanned) return;
     const input = document.getElementById('chat-input');
