@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Telegiornale Live - Zeb89 Fanpage</title>
+<link rel="icon" href="logo.png">
+<link rel="manifest" href="manifest.json">
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    color: #dbeafe;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(80,170,255,.35), transparent 38%),
+      radial-gradient(circle at 90% 35%, rgba(40,120,220,.35), transparent 42%),
+      linear-gradient(160deg, #0a1f3d 0%, #07152b 50%, #030a16 100%);
+    background-attachment: fixed;
+  }
+  .wrap { width: 100%; max-width: 820px; margin: 0 auto; padding: 18px; }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(120,190,255,.22), rgba(20,50,95,.35));
+    border: 1px solid rgba(140,200,255,.45);
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.6), inset 0 1px 0 rgba(200,230,255,.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+
+  header.glass { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 20px 24px; }
+  
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-small {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid rgba(140,200,255,.7);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(90,180,255,.8);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .live-badge {
+    background: #e03131;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 12px rgba(224,49,49,0.8);
+    animation: pulse 1.5s infinite;
+  }
+  .live-badge.offline {
+    background: #495057;
+    box-shadow: none;
+    animation: none;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 8px 16px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 1px solid #6cc0ff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
+    box-shadow: 0 0 12px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .btn:active { filter: brightness(.9); transform: scale(0.98); }
+  .btn-danger {
+    background: linear-gradient(180deg, #ff6b6b 0%, #c92a2a 100%);
+    border-color: #ffa8a8;
+    box-shadow: 0 0 10px rgba(255,107,107,.5);
+  }
+  .btn-sound {
+    background: linear-gradient(180deg, #40c057 0%, #2b8a3e 100%);
+    border-color: #8ce99a;
+    box-shadow: 0 0 10px rgba(64,192,87,.5);
+  }
+
+  /* Schermo TV */
+  .tv-screen {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #020813;
+    border: 2px solid rgba(120,185,255,0.5);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+  }
+  .tv-screen video, .tv-screen img, .tv-screen iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: none;
+  }
+  .tv-placeholder {
+    text-align: center;
+    color: #8fb4dc;
+    padding: 20px;
+  }
+
+  /* Overlay sblocco audio */
+  .audio-unlock-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(3, 10, 22, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    gap: 12px;
+    text-align: center;
+    padding: 20px;
+  }
+
+  /* Striscione TG (Lower Third) */
+  .tg-banner-wrap {
+    margin-top: 12px;
+    background: linear-gradient(90deg, #0d56ad 0%, #1f7fd8 50%, #0a1f3d 100%);
+    border: 1px solid #6cc0ff;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  }
+  .tg-label {
+    background: #e03131;
+    color: #fff;
+    font-weight: 800;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .tg-marquee {
+    padding: 8px 14px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .tg-marquee span {
+    display: inline-block;
+    animation: scrollText 18s linear infinite;
+  }
+  @keyframes scrollText {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* Pannello Regia Mod */
+  .regia-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .regia-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .regia-input {
+    flex: 1;
+    min-width: 200px;
+    background: rgba(5,20,45,0.8);
+    border: 1px solid rgba(120,185,255,0.3);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  .regia-input:focus { outline: none; border-color: #5cc0ff; }
+
+  /* Chat Live */
+  .chat-box {
+    height: 300px;
+    overflow-y: auto;
+    background: rgba(5,20,45,0.65);
+    border: 1px solid rgba(120,185,255,0.3);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .chat-msg {
+    background: rgba(10,30,60,0.5);
+    border: 1px solid rgba(120,185,255,0.15);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .chat-author { color: #5cc0ff; font-weight: 700; margin-right: 6px; }
+  .chat-author.mod { color: #ffd43b; }
+  .chat-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .mini-btn {
+    border: none;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .chat-input-row { display: flex; gap: 8px; }
+  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="glass">
+    <div class="header-left">
+      <img class="logo-small" src="logo.png" alt="Logo TG">
+      <h1>Telegiornale <span id="status-badge" class="live-badge offline">OFFLINE</span></h1>
+    </div>
+    <a class="btn" href="index.html">← Torna alla Home</a>
+  </header>
+
+  <!-- SCHERMO TV + STRISCIONE -->
+  <section class="glass">
+    <div class="tv-screen" id="tv-screen">
+      <div id="audio-overlay" class="audio-unlock-overlay">
+        <p style="margin:0; font-size:1.05rem; color:#fff;">Clicca per sintonizzarti e attivare l'audio della regia</p>
+        <button class="btn" onclick="unlockStudio()">🔊 Entra nello Studio Live</button>
+      </div>
+      <div id="tv-content" class="tv-placeholder">
+        <h2>📺 Nessuna trasmissione in corso</h2>
+        <p>Resta sintonizzato: appena la regia avvia la diretta, il segnale apparirà qui automaticamente.</p>
+      </div>
+    </div>
+
+    <div class="tg-banner-wrap">
+      <div class="tg-label">ULTIM'ORA</div>
+      <div class="tg-marquee"><span id="tg-banner-text">Benvenuti al Telegiornale ufficiale di Zeb89 Fanpage!</span></div>
+    </div>
+  </section>
+
+  <!-- PANNELLO REGIA (SOLO MOD AUTORIZZATI) -->
+  <section id="regia-panel" class="glass" style="display: none; border-color: #ffd43b;">
+    <h2 style="margin-top:0; color:#ffd43b;">🎛️ Regia Telegiornale (Controllo Mod)</h2>
+    
+    <p style="font-size:0.85rem; color:#8fb4dc; margin-bottom:8px;"><strong>1. Sigla & Effetti Sonori (Partono a tutti in diretta):</strong></p>
+    <div class="regia-grid">
+      <button class="btn" onclick="sendMedia('sigla', 'siglazfanpage.mp4')">🎬 Manda Sigla Video</button>
+      <button class="btn btn-sound" onclick="triggerSound('lezzo.mp3')">🔊 Lezzo!</button>
+      <button class="btn btn-sound" onclick="triggerSound('dongdong.mp3')">🔔 Dong Dong</button>
+      <button class="btn btn-sound" onclick="triggerSound('ehvolevi.mp3')">😏 Eh Volevi!</button>
+    </div>
+
+    <p style="font-size:0.85rem; color:#8fb4dc; margin-bottom:8px;"><strong>2. Striscione Scorrevole:</strong></p>
+    <div class="regia-input-row">
+      <input type="text" id="regia-banner-input" class="regia-input" placeholder="Scrivi il testo dello striscione...">
+      <button class="btn" onclick="updateBanner()">Aggiorna Striscione</button>
+    </div>
+
+    <p style="font-size:0.85rem; color:#8fb4dc; margin-bottom:8px;"><strong>3. Trasmetti Media (Immagine Reddit, Link YouTube/Live o MP4):</strong></p>
+    <div class="regia-input-row">
+      <input type="text" id="regia-media-input" class="regia-input" placeholder="Incolla link immagine, video o live YouTube...">
+      <button class="btn" onclick="sendCustomMedia()">Manda in Onda</button>
+      <button class="btn btn-danger" onclick="stopBroadcast()">⏹️ Chiudi Diretta / Schermo Nero</button>
+    </div>
+  </section>
+
+  <!-- CHAT LIVE -->
+  <section class="glass">
+    <h2 style="margin-top:0;">💬 Chat della Diretta</h2>
+    <div id="chat-messages" class="chat-box">
+      <p style="color:#8fb4dc; text-align:center; font-size:0.85rem;">Caricamento chat...</p>
+    </div>
+
+    <div id="chat-controls" class="chat-input-row">
+      <input type="text" id="chat-input" class="regia-input" placeholder="Scrivi in chat..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+      <button class="btn" onclick="sendChatMessage()">Invia</button>
+    </div>
+    <p id="chat-login-warning" style="display:none; color:#8fb4dc; font-size:0.85rem; text-align:center; margin:0;">
+      Effettua l'accesso dalla pagina <a href="community.html" style="color:#5cc0ff;">Community</a> per scrivere in chat.
+    </p>
+    <p id="chat-banned-warning" style="display:none; color:#ff6b6b; font-size:0.9rem; font-weight:700; text-align:center; margin:0;">
+      🚫 Sei stato bannato dalla chat del Telegiornale dai moderatori.
+    </p>
+  </section>
+
+  <footer>Zeb89 Fanpage · Studio Televisivo Live</footer>
+
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    doc, 
+    setDoc, 
+    getDoc,
+    deleteDoc,
+    collection, 
+    addDoc, 
+    query, 
+    orderBy, 
+    limit, 
+    onSnapshot, 
+    serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHtswW-j0O0tWHHOyJP6QROFvsN_SKHqs",
+    authDomain: "zeb89fanpage-9a3dc.firebaseapp.com",
+    projectId: "zeb89fanpage-9a3dc",
+    storageBucket: "zeb89fanpage-9a3dc.firebasestorage.app",
+    messagingSenderId: "630651020835",
+    appId: "1:630651020835:web:51e425c5e35d782f8e7396",
+    measurementId: "G-578X21KF8L"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Gli stessi UID autorizzati della community
+  const REGIA_UIDS = [
+    "ZP8lYMOoSFUuPVb55I0rXwiqo8a2",
+    "O1JSA1WpzGgI36BWkKA17u3u0uH2",
+    "dpuIezQFvqNNwALmboVIaT6O10X2"
+  ];
+
+  let audioUnlocked = false;
+  let lastSoundTimestamp = 0;
+  let lastMediaTimestamp = 0;
+  let isCurrentUserMod = false;
+  let isCurrentUserBanned = false;
+
+  // Sblocca l'audio al clic dell'utente
+  window.unlockStudio = function() {
+    audioUnlocked = true;
+    document.getElementById('audio-overlay').style.display = 'none';
+    const vid = document.querySelector('#tv-content video');
+    if (vid) {
+      vid.muted = false;
+      vid.play().catch(() => {});
+    }
+  };
+
+  // Controllo utente loggato + stato Ban
+  onAuthStateChanged(auth, (user) => {
+    const regiaPanel = document.getElementById('regia-panel');
+    const chatControls = document.getElementById('chat-controls');
+    const loginWarn = document.getElementById('chat-login-warning');
+    const bannedWarn = document.getElementById('chat-banned-warning');
+
+    if (user) {
+      isCurrentUserMod = REGIA_UIDS.includes(user.uid);
+      regiaPanel.style.display = isCurrentUserMod ? 'block' : 'none';
+      loginWarn.style.display = 'none';
+
+      // Controlla in tempo reale se l'utente è bannato
+      onSnapshot(doc(db, "tg_banned", user.uid), (banSnap) => {
+        isCurrentUserBanned = banSnap.exists();
+        if (isCurrentUserBanned && !isCurrentUserMod) {
+          chatControls.style.display = 'none';
+          bannedWarn.style.display = 'block';
+        } else {
+          chatControls.style.display = 'flex';
+          bannedWarn.style.display = 'none';
+        }
+      });
+    } else {
+      isCurrentUserMod = false;
+      regiaPanel.style.display = 'none';
+      chatControls.style.display = 'none';
+      bannedWarn.style.display = 'none';
+      loginWarn.style.display = 'block';
+    }
+  });
+
+  // --- FUNZIONI DI REGIA (SOLO MOD) ---
+  const regiaRef = doc(db, "telegiornale", "regia");
+
+  window.triggerSound = async function(soundFile) {
+    if (!isCurrentUserMod) return;
+    await setDoc(regiaRef, {
+      soundFile: soundFile,
+      soundTriggeredAt: Date.now()
+    }, { merge: true });
+  };
+
+  window.updateBanner = async function() {
+    if (!isCurrentUserMod) return;
+    const text = document.getElementById('regia-banner-input').value.trim();
+    if (!text) return;
+    await setDoc(regiaRef, { bannerText: text }, { merge: true });
+    document.getElementById('regia-banner-input').value = "";
+  };
+
+  window.sendMedia = async function(type, url) {
+    if (!isCurrentUserMod) return;
+    await setDoc(regiaRef, {
+      isLive: true,
+      mediaType: type,
+      mediaUrl: url,
+      mediaTriggeredAt: Date.now()
+    }, { merge: true });
+  };
+
+  window.sendCustomMedia = async function() {
+    if (!isCurrentUserMod) return;
+    const url = document.getElementById('regia-media-input').value.trim();
+    if (!url) return;
+
+    let type = "image";
+    let finalUrl = url;
+
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      type = "youtube";
+      let videoId = "";
+      if (url.includes("youtu.be/")) videoId = url.split("youtu.be/")[1]?.split("?")[0];
+      else if (url.includes("watch?v=")) videoId = url.split("watch?v=")[1]?.split("&")[0];
+      else if (url.includes("/live/")) videoId = url.split("/live/")[1]?.split("?")[0];
+      if (videoId) finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    } else if (url.endsWith(".mp4") || url.endsWith(".webm")) {
+      type = "video";
+    }
+
+    await sendMedia(type, finalUrl);
+    document.getElementById('regia-media-input').value = "";
+  };
+
+  window.stopBroadcast = async function() {
+    if (!isCurrentUserMod) return;
+    await setDoc(regiaRef, {
+      isLive: false,
+      mediaType: "none",
+      mediaUrl: "",
+      mediaTriggeredAt: Date.now()
+    }, { merge: true });
+  };
+
+  // --- ASCOLTO IN TEMPO REALE DELLO STUDIO TV ---
+  onSnapshot(regiaRef, (docSnap) => {
+    if (!docSnap.exists()) return;
+    const data = docSnap.data();
+
+    // 1. Aggiorna Badge Live
+    const badge = document.getElementById('status-badge');
+    if (data.isLive) {
+      badge.textContent = "IN ONDA";
+      badge.classList.remove('offline');
+    } else {
+      badge.textContent = "OFFLINE";
+      badge.classList.add('offline');
+    }
+
+    // 2. Aggiorna Striscione
+    if (data.bannerText) {
+      document.getElementById('tg-banner-text').textContent = data.bannerText;
+    }
+
+    // 3. Riproduci Effetti Sonori
+    if (data.soundFile && data.soundTriggeredAt && data.soundTriggeredAt !== lastSoundTimestamp) {
+      // Evita di suonare vecchi suoni appena entri nella pagina (tolleranza 5 secondi)
+      if (Date.now() - data.soundTriggeredAt < 5000 && audioUnlocked) {
+        const audio = new Audio(data.soundFile);
+        audio.play().catch(e => console.log("Audio bloccato:", e));
+      }
+      lastSoundTimestamp = data.soundTriggeredAt;
+    }
+
+    // 4. Aggiorna Schermo TV (Sigla, Video, Immagine o YouTube)
+    if (data.mediaTriggeredAt !== lastMediaTimestamp) {
+      lastMediaTimestamp = data.mediaTriggeredAt;
+      const tvContent = document.getElementById('tv-content');
+
+      if (!data.isLive || data.mediaType === "none" || !data.mediaUrl) {
+        tvContent.innerHTML = `
+          <div class="tv-placeholder">
+            <h2>📺 Trasmissione terminata o in pausa</h2>
+            <p>Attendi il prossimo collegamento della regia.</p>
+          </div>`;
+      } else if (data.mediaType === "sigla" || data.mediaType === "video") {
+        tvContent.innerHTML = `<video src="${escapeHtml(data.mediaUrl)}" autoplay playsinline ${audioUnlocked ? '' : 'muted'} controls></video>`;
+      } else if (data.mediaType === "youtube") {
+        tvContent.innerHTML = `<iframe src="${escapeHtml(data.mediaUrl)}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+      } else {
+        tvContent.innerHTML = `<img src="${escapeHtml(data.mediaUrl)}" alt="Diretta TG">`;
+      }
+    }
+  });
+
+  // --- SISTEMA CHAT E MODERAZIONE ---
+  window.sendChatMessage = async function() {
+    if (!auth.currentUser || isCurrentUserBanned) return;
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    if (text.includes("http://") || text.includes("https://") || text.includes("www.")) {
+      alert("Non è consentito inviare link in chat!");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "tg_chat"), {
+        text: text,
+        author: auth.currentUser.displayName || "Utente",
+        uid: auth.currentUser.uid,
+        isMod: isCurrentUserMod,
+        createdAt: serverTimestamp()
+      });
+      input.value = "";
+    } catch (e) {
+      alert("Errore invio messaggio (potresti essere stato bannato).");
+    }
+  };
+
+  window.deleteChatMessage = async function(msgId) {
+    if (!isCurrentUserMod) return;
+    await deleteDoc(doc(db, "tg_chat", msgId));
+  };
+
+  window.banUser = async function(targetUid, targetName) {
+    if (!isCurrentUserMod) return;
+    if (REGIA_UIDS.includes(targetUid)) {
+      alert("Non puoi bannare un altro moderatore della regia!");
+      return;
+    }
+    if (confirm(`Vuoi davvero BANNARE "${targetName}" dalla chat del Telegiornale?`)) {
+      await setDoc(doc(db, "tg_banned", targetUid), {
+        bannedBy: auth.currentUser.uid,
+        username: targetName,
+        bannedAt: serverTimestamp()
+      });
+      alert(`${targetName} è stato bannato.`);
+    }
+  };
+
+  const chatQuery = query(collection(db, "tg_chat"), orderBy("createdAt", "asc"), limit(60));
+  onSnapshot(chatQuery, (snapshot) => {
+    const chatBox = document.getElementById('chat-messages');
+    chatBox.innerHTML = "";
+
+    if (snapshot.empty) {
+      chatBox.innerHTML = `<p style="color:#8fb4dc; text-align:center; font-size:0.85rem;">Nessun messaggio in chat. Scrivi per primo!</p>`;
+      return;
+    }
+
+    snapshot.docs.forEach(docSnap => {
+      const msg = docSnap.data();
+      const msgId = docSnap.id;
+
+      const div = document.createElement('div');
+      div.className = 'chat-msg';
+      div.innerHTML = `
+        <div>
+          <span class="chat-author ${msg.isMod ? 'mod' : ''}">${msg.isMod ? '👑 ' : ''}${escapeHtml(msg.author)}:</span>
+          <span>${escapeHtml(msg.text)}</span>
+        </div>
+        ${isCurrentUserMod ? `
+          <div class="chat-actions">
+            <button class="mini-btn" style="background:#c92a2a;" title="Elimina messaggio" onclick="deleteChatMessage('${msgId}')">X</button>
+            ${!msg.isMod ? `<button class="mini-btn" style="background:#495057;" title="Banna utente" onclick="banUser('${msg.uid}', '${escapeHtml(msg.author)}')">🚫 Ban</button>` : ''}
+          </div>
+        ` : ''}
+      `;
+      chatBox.appendChild(div);
+    });
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  function escapeHtml(text) {
+    if(!text) return "";
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+</script>
+</body>
+</html>
