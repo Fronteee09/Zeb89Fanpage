@@ -202,9 +202,8 @@
     margin-bottom: 10px;
     flex-wrap: wrap;
   }
-  .regia-input {
-    flex: 1;
-    min-width: 200px;
+  .regia-input, .regia-textarea {
+    width: 100%;
     background: rgba(5,20,45,0.8);
     border: 1px solid rgba(120,185,255,0.3);
     border-radius: 8px;
@@ -212,7 +211,27 @@
     color: #fff;
     font-size: 0.9rem;
   }
-  .regia-input:focus { outline: none; border-color: #5cc0ff; }
+  .regia-textarea { resize: vertical; min-height: 70px; }
+  .regia-input:focus, .regia-textarea:focus { outline: none; border-color: #5cc0ff; }
+
+  /* Schedine / Riassunti Edizioni */
+  .summary-card {
+    background: rgba(5,20,45,0.65);
+    border: 1px solid rgba(120,185,255,0.35);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #8fb4dc;
+    margin-bottom: 6px;
+  }
+  .summary-title { margin: 0 0 6px; font-size: 1.1rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
+  .summary-text { margin: 0; color: #bcd9f7; font-size: 0.9rem; word-break: break-word; }
 
   /* Chat Live */
   .chat-box {
@@ -288,7 +307,7 @@
   <section id="regia-panel" class="glass" style="display: none; border-color: #ffd43b;">
     <h2 style="margin-top:0; color:#ffd43b;">🎛️ Regia Telegiornale (Controllo Mod)</h2>
     
-    <p style="font-size:0.85rem; color:#8fb4dc; margin-bottom:8px;"><strong>1. Sigla & Effetti Sonori (Partono a tutti in diretta):</strong></p>
+    <p style="font-size:0.85rem; color:#8fb4dc; margin-bottom:8px;"><strong>1. Sigla & Effetti Sonori:</strong></p>
     <div class="regia-grid">
       <button class="btn" onclick="sendMedia('sigla', 'siglazfanpage.mp4')">🎬 Manda Sigla Video</button>
       <button class="btn btn-sound" onclick="triggerSound('lezzo.mp3')">🔊 Lezzo!</button>
@@ -302,14 +321,23 @@
     <p style="font-size:0.85rem; color:#8fb4dc; margin: 12px 0 8px;"><strong>2. Striscione Scorrevole:</strong></p>
     <div class="regia-input-row">
       <input type="text" id="regia-banner-input" class="regia-input" placeholder="Scrivi il testo dello striscione...">
-      <button class="btn" onclick="updateBanner()">Aggiorna Striscione</button>
+      <button class="btn" onclick="updateBanner()">Aggiorna</button>
     </div>
 
-    <p style="font-size:0.85rem; color:#8fb4dc; margin-bottom:8px;"><strong>3. Trasmetti Media (Immagine Reddit, Link YouTube/Live o MP4):</strong></p>
+    <p style="font-size:0.85rem; color:#8fb4dc; margin-bottom:8px;"><strong>3. Trasmetti Media in Onda:</strong></p>
     <div class="regia-input-row">
       <input type="text" id="regia-media-input" class="regia-input" placeholder="Incolla link immagine, video o live YouTube...">
       <button class="btn" onclick="sendCustomMedia()">Manda in Onda</button>
-      <button class="btn btn-danger" onclick="stopBroadcast()">⏹️ Chiudi Diretta / Schermo Nero</button>
+      <button class="btn btn-danger" onclick="stopBroadcast()">⏹️ Schermo Nero / Fine Diretta</button>
+    </div>
+
+    <hr style="border:0; border-top:1px dashed rgba(255,212,59,0.3); margin: 16px 0;">
+
+    <p style="font-size:0.85rem; color:#ffd43b; margin-bottom:8px;"><strong>📝 Pubblica Scheda Riassunto Edizione (Schedina):</strong></p>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <input type="text" id="summary-title-input" class="regia-input" placeholder="Titolo dell'edizione (es. Edizione Straordinaria #04)...">
+      <textarea id="summary-text-input" class="regia-textarea" placeholder="Scrivi qui il riassunto della giornata..."></textarea>
+      <button class="btn" style="background: linear-gradient(180deg, #ffd43b 0%, #f59f00 100%); border-color:#ffec99; color:#030a16; font-weight:700;" onclick="publishSummary()">Pubblica Schedina Edizione</button>
     </div>
   </section>
 
@@ -332,6 +360,14 @@
     </p>
   </section>
 
+  <!-- SCHEDINE / RIASSUNTI EDIZIONI PASSATE -->
+  <section class="glass">
+    <h2 style="margin-top:0; color:#5cc0ff;">📰 Schedine & Riassunti Edizioni Passate</h2>
+    <div id="summaries-container">
+      <p style="color:#8fb4dc; text-align:center; font-size:0.85rem;">Nessuna schedina pubblicata.</p>
+    </div>
+  </section>
+
   <footer>Zeb89 Fanpage · Studio Televisivo Live</footer>
 
 </div>
@@ -344,7 +380,6 @@
     getFirestore, 
     doc, 
     setDoc, 
-    getDoc,
     deleteDoc,
     collection, 
     addDoc, 
@@ -426,34 +461,20 @@
 
   window.triggerSound = async function(soundFile) {
     if (!isCurrentUserMod) return;
-    try {
-      await setDoc(regiaRef, {
-        soundFile: soundFile,
-        soundTriggeredAt: Date.now()
-      }, { merge: true });
-    } catch(e) { console.error("Errore suono:", e); alert("Impossibile inviare il suono. Controlla le regole Firebase."); }
+    await setDoc(regiaRef, { soundFile: soundFile, soundTriggeredAt: Date.now() }, { merge: true });
   };
 
   window.updateBanner = async function() {
     if (!isCurrentUserMod) return;
     const text = document.getElementById('regia-banner-input').value.trim();
     if (!text) return;
-    try {
-      await setDoc(regiaRef, { bannerText: text }, { merge: true });
-      document.getElementById('regia-banner-input').value = "";
-    } catch(e) { console.error("Errore striscione:", e); }
+    await setDoc(regiaRef, { bannerText: text }, { merge: true });
+    document.getElementById('regia-banner-input').value = "";
   };
 
   window.sendMedia = async function(type, url) {
     if (!isCurrentUserMod) return;
-    try {
-      await setDoc(regiaRef, {
-        isLive: true,
-        mediaType: type,
-        mediaUrl: url,
-        mediaTriggeredAt: Date.now()
-      }, { merge: true });
-    } catch(e) { console.error("Errore media:", e); alert("Errore invio media. Controlla le regole Firebase."); }
+    await setDoc(regiaRef, { isLive: true, mediaType: type, mediaUrl: url, mediaTriggeredAt: Date.now() }, { merge: true });
   };
 
   window.sendCustomMedia = async function() {
@@ -485,31 +506,53 @@
       currentActiveAudio.pause();
       currentActiveAudio.currentTime = 0;
     }
-    await setDoc(regiaRef, {
-      soundFile: "",
-      soundTriggeredAt: Date.now(),
-      mediaType: "none",
-      mediaUrl: "",
-      mediaTriggeredAt: Date.now()
-    }, { merge: true });
+    await setDoc(regiaRef, { soundFile: "", soundTriggeredAt: Date.now(), mediaType: "none", mediaUrl: "", mediaTriggeredAt: Date.now() }, { merge: true });
   };
 
   window.stopBroadcast = async function() {
     if (!isCurrentUserMod) return;
-    await setDoc(regiaRef, {
-      isLive: false,
-      mediaType: "none",
-      mediaUrl: "",
-      mediaTriggeredAt: Date.now()
-    }, { merge: true });
+    await setDoc(regiaRef, { isLive: false, mediaType: "none", mediaUrl: "", mediaTriggeredAt: Date.now() }, { merge: true });
   };
 
+  // Pubblica Schedina Riassunto
+  window.publishSummary = async function() {
+    if (!isCurrentUserMod) return;
+    const title = document.getElementById('summary-title-input').value.trim();
+    const text = document.getElementById('summary-text-input').value.trim();
+
+    if (!title || !text) {
+      alert("Inserisci sia il titolo che il testo del riassunto!");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "tg_summaries"), {
+        title,
+        text,
+        author: auth.currentUser.displayName || "Regia TG",
+        createdAt: serverTimestamp()
+      });
+      document.getElementById('summary-title-input').value = "";
+      document.getElementById('summary-text-input').value = "";
+      alert("Schedina dell'edizione pubblicata con successo!");
+    } catch (e) {
+      alert("Errore nella pubblicazione della schedina.");
+    }
+  };
+
+  window.deleteSummary = async function(summaryId) {
+    if (!isCurrentUserMod) return;
+    if (confirm("Vuoi eliminare questa schedina?")) {
+      await deleteDoc(doc(db, "tg_summaries", summaryId));
+    }
+  };
+
+  // Ascolto stato TV
   onSnapshot(regiaRef, (docSnap) => {
     const tvContent = document.getElementById('tv-content');
     const badge = document.getElementById('status-badge');
 
     if (!docSnap.exists()) {
-      // Se il documento non esiste ancora, mostra l'immagine predefinita
       tvContent.innerHTML = `<img src="nessunadiretta.png" alt="Nessuna Diretta">`;
       badge.textContent = "OFFLINE";
       badge.classList.add('offline');
@@ -532,9 +575,7 @@
 
     if (data.soundFile && data.soundTriggeredAt && data.soundTriggeredAt !== lastSoundTimestamp) {
       if (Date.now() - data.soundTriggeredAt < 5000 && audioUnlocked) {
-        if (currentActiveAudio) {
-          currentActiveAudio.pause();
-        }
+        if (currentActiveAudio) currentActiveAudio.pause();
         currentActiveAudio = new Audio(data.soundFile);
         currentActiveAudio.play().catch(e => console.log("Audio bloccato:", e));
       }
@@ -559,6 +600,37 @@
     }
   });
 
+  // Ascolto Schedine / Riassunti
+  const summariesQuery = query(collection(db, "tg_summaries"), orderBy("createdAt", "desc"));
+  onSnapshot(summariesQuery, (snapshot) => {
+    const container = document.getElementById('summaries-container');
+    container.innerHTML = "";
+
+    if (snapshot.empty) {
+      container.innerHTML = `<p style="color:#8fb4dc; text-align:center; font-size:0.85rem;">Nessuna schedina pubblicata.</p>`;
+      return;
+    }
+
+    snapshot.docs.forEach(docSnap => {
+      const sum = docSnap.data();
+      const sumId = docSnap.id;
+      const dateStr = sum.createdAt ? new Date(sum.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Pubblicando...";
+
+      const card = document.createElement('div');
+      card.className = 'summary-card';
+      card.innerHTML = `
+        <div class="summary-header">
+          <span>📅 ${dateStr} — <strong style="color:#5cc0ff;">${escapeHtml(sum.author)}</strong></span>
+          ${isCurrentUserMod ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.7rem;" onclick="deleteSummary('${sumId}')">Elimina</button>` : ''}
+        </div>
+        <h3 class="summary-title">${escapeHtml(sum.title)}</h3>
+        <p class="summary-text">${escapeHtml(sum.text)}</p>
+      `;
+      container.appendChild(card);
+    });
+  });
+
+  // Chat Live
   window.sendChatMessage = async function() {
     if (!auth.currentUser || isCurrentUserBanned) return;
     const input = document.getElementById('chat-input');
@@ -580,7 +652,7 @@
       });
       input.value = "";
     } catch (e) {
-      alert("Errore invio messaggio (potresti essere stato bannato).");
+      alert("Errore invio messaggio.");
     }
   };
 
@@ -592,16 +664,11 @@
   window.banUser = async function(targetUid, targetName) {
     if (!isCurrentUserMod) return;
     if (REGIA_UIDS.includes(targetUid)) {
-      alert("Non puoi bannare un altro moderatore della regia!");
+      alert("Non puoi bannare un altro moderatore!");
       return;
     }
-    if (confirm(`Vuoi davvero BANNARE "${targetName}" dalla chat del Telegiornale?`)) {
-      await setDoc(doc(db, "tg_banned", targetUid), {
-        bannedBy: auth.currentUser.uid,
-        username: targetName,
-        bannedAt: serverTimestamp()
-      });
-      alert(`${targetName} è stato bannato.`);
+    if (confirm(`Vuoi bannare "${targetName}"?`)) {
+      await setDoc(doc(db, "tg_banned", targetUid), { bannedBy: auth.currentUser.uid, username: targetName, bannedAt: serverTimestamp() });
     }
   };
 
@@ -611,7 +678,7 @@
     chatBox.innerHTML = "";
 
     if (snapshot.empty) {
-      chatBox.innerHTML = `<p style="color:#8fb4dc; text-align:center; font-size:0.85rem;">Nessun messaggio in chat. Scrivi per primo!</p>`;
+      chatBox.innerHTML = `<p style="color:#8fb4dc; text-align:center; font-size:0.85rem;">Nessun messaggio in chat.</p>`;
       return;
     }
 
@@ -628,8 +695,8 @@
         </div>
         ${isCurrentUserMod ? `
           <div class="chat-actions">
-            <button class="mini-btn" style="background:#c92a2a;" title="Elimina messaggio" onclick="deleteChatMessage('${msgId}')">X</button>
-            ${!msg.isMod ? `<button class="mini-btn" style="background:#495057;" title="Banna utente" onclick="banUser('${msg.uid}', '${escapeHtml(msg.author)}')">🚫 Ban</button>` : ''}
+            <button class="mini-btn" style="background:#c92a2a;" title="Elimina" onclick="deleteChatMessage('${msgId}')">X</button>
+            ${!msg.isMod ? `<button class="mini-btn" style="background:#495057;" title="Ban" onclick="banUser('${msg.uid}', '${escapeHtml(msg.author)}')">🚫 Ban</button>` : ''}
           </div>
         ` : ''}
       `;
