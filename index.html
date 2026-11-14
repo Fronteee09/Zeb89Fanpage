@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zeb89 Fanpage</title>
+<title>Zeb89 Fanpage - Home</title>
 <link rel="icon" href="logo.png">
 <link rel="manifest" href="manifest.json">
 <style>
@@ -31,127 +31,129 @@
     box-shadow: 0 8px 28px rgba(0,0,0,.6), inset 0 1px 0 rgba(200,230,255,.5);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    padding: 20px;
+    padding: 24px;
     margin-bottom: 18px;
+    text-align: center;
   }
 
-  header.glass { margin-top: 24px; text-align: center; padding: 36px 20px; }
-
-  .logo {
-    width: 120px;
-    height: 120px;
+  .logo-main {
+    width: 90px;
+    height: 90px;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid rgba(140,200,255,.7);
-    box-shadow: 0 0 18px rgba(80,170,255,.7);
-    margin-bottom: 14px;
+    border: 3px solid rgba(140,200,255,.7);
+    box-shadow: 0 0 20px rgba(90,180,255,.6);
+    margin-bottom: 12px;
   }
 
   h1 {
-    margin: 0 0 10px;
-    font-size: clamp(2rem, 9vw, 3.4rem);
-    line-height: 1.1;
+    margin: 0 0 6px;
+    font-size: 1.8rem;
     color: #fff;
-    text-shadow: 0 0 14px rgba(90,180,255,.9), 0 2px 4px rgba(0,0,0,.8);
+    text-shadow: 0 0 12px rgba(90,180,255,.8);
   }
-  header p { margin: 0 0 22px; color: #bcd9f7; font-size: 1.1rem; }
 
-  .btn-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
+  p {
+    color: #bcd9f7;
+    font-size: 0.95rem;
+    margin: 0 0 16px;
   }
 
   .btn {
     display: inline-block;
-    min-height: 48px;
-    padding: 12px 28px;
+    padding: 10px 20px;
     color: #fff;
     font-weight: 600;
+    font-size: 0.95rem;
     text-decoration: none;
-    text-shadow: 0 1px 2px rgba(0,20,60,.9);
     border: 1px solid #6cc0ff;
     border-radius: 999px;
     background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
-    box-shadow: 0 0 16px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+    box-shadow: 0 0 14px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.1s;
+  }
+  .btn:active { filter: brightness(.9); transform: scale(0.98); }
+
+  .nav-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
   }
 
-  .btn-secondary {
-    background: linear-gradient(180deg, rgba(80,140,200,0.5) 0%, rgba(20,50,90,0.7) 100%);
-    border: 1px solid rgba(140,200,255,0.4);
-    box-shadow: 0 0 12px rgba(80,170,255,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+  .grid-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
   }
 
-  .btn:active { filter: brightness(.9); }
-  .btn:focus-visible, a:focus-visible { outline: 3px solid #8fd0ff; outline-offset: 2px; }
-
-  h2 { margin: 0 0 10px; font-size: 1.35rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6); }
-  p { margin: 0 0 10px; color: #bcd9f7; }
-
-  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-  .card {
-    background: rgba(5,20,45,.55);
-    border: 1px solid rgba(120,185,255,.35);
-    border-radius: 12px;
-    padding: 14px;
+  .card-box {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
-  .card h3 { margin: 0 0 4px; font-size: 1.05rem; color: #fff; }
-  .card p { margin: 0; color: #bcd9f7; }
 
-  ul { margin: 0; padding-left: 1.2em; }
-  li { margin-bottom: 6px; }
+  .card-box h2 {
+    margin-top: 0;
+    font-size: 1.25rem;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(90,180,255,.6);
+  }
 
-  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 20px 0 40px; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
+  <!-- Header / Benvenuto -->
   <header class="glass">
-    <img class="logo" src="logo.png" alt="Logo Zeb89 Fanpage">
+    <img class="logo-main" src="logo.png" alt="Logo Zeb89 Fanpage">
     <h1>Zeb89 Fanpage</h1>
-    <p>La community dei fan di Zeb89. Novità, regole e come unirti a noi.</p>
-    <div class="btn-group">
-      <a class="btn" href="https://www.reddit.com/r/Zeb89FanpageOfficial/" target="_blank" rel="noopener">Vieni su Reddit</a>
-      <a class="btn btn-secondary" href="annuncipost.html">Visualizza gli annunci/post</a>
-      <a class="btn btn-secondary" href="community.html">Community</a>
-      <a class="btn btn-secondary" href="archivio.html">Visita Archivio</a>
-      <a class="btn btn-secondary" href="account.html">Account</a>
+    <p>La PWA ufficiale della community, protetta e sempre accessibile.</p>
+    
+    <div class="nav-buttons">
+      <a class="btn" href="chisiamo.html">Chi Siamo</a>
+      <a class="btn" href="archivio.html">Visita Archivio</a>
     </div>
   </header>
 
-  <section class="glass">
-    <h2>Chi siamo</h2>
-    <p>Siamo una fanpage gestita dai fan, per i fan. Condividiamo contenuti, idee e momenti divertenti.</p>
-  </section>
+  <!-- Griglia Sezioni -->
+  <div class="grid-section">
 
-  <section class="glass">
-    <h2>Dove ci trovi</h2>
-    <div class="grid">
-      <div class="card"><h3>Reddit</h3><p>Post quotidiani e discussioni.</p></div>
-      <div class="card"><h3>Discord</h3><p>Chat con la community.</p></div>
+    <!-- Box Telegiornale Live -->
+    <div class="glass card-box">
+      <div>
+        <h2>📺 Telegiornale Live</h2>
+        <p>Accedi allo studio televisivo in diretta gestito dalla regia, ascolta gli effetti sonori e partecipa alla chat live con moderazione.</p>
+      </div>
+      <a class="btn" href="telegiornale.html" style="align-self: flex-start;">Apri Telegiornale 🔴</a>
     </div>
-  </section>
 
-  <section class="glass">
-    <h2>Regole</h2>
-    <ul>
-      <li>Rispetta tutti i membri.</li>
-      <li>Niente spam.</li>
-      <li>Pubblica solo contenuti legati alla fanpage.</li>
-    </ul>
-  </section>
-
-  <section class="glass">
-    <h2>Staff</h2>
-    <p>Siamo i moderatori della fanpage. Per qualsiasi dubbio scrivici su Reddit.</p>
-    <div style="margin-top: 14px;">
-      <a class="btn btn-secondary" href="staff.html">Visualizza staff completo</a>
+    <!-- Box Community -->
+    <div class="glass card-box">
+      <div>
+        <h2>💬 Community & Post</h2>
+        <p>Condividi pensieri, immagini da Reddit, rispondi ai commenti e guarda i video esclusivi pubblicati dagli admin autorizzati.</p>
+      </div>
+      <a class="btn" href="community.html" style="align-self: flex-start;">Entra in Community</a>
     </div>
-  </section>
 
-  <footer>Zeb89 Fanpage · Pagina non ufficiale fatta dai fan</footer>
+    <!-- Box Annunci -->
+    <div class="glass card-box">
+      <div>
+        <h2>📢 Annunci Ufficiali</h2>
+        <p>Rimani aggiornato su tutte le novità, i post in primo piano e gli avvisi importanti pubblicati dalla direzione della fanpage.</p>
+      </div>
+      <a class="btn" href="annuncipost.html" style="align-self: flex-start;">Leggi gli Annunci</a>
+    </div>
+
+  </div>
+
+  <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
 
 </div>
 </body>
