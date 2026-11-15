@@ -161,6 +161,46 @@
     padding: 20px;
   }
 
+  /* Pulsante Schermo Intero */
+  .fullscreen-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(10, 30, 60, 0.85);
+    border: 1px solid rgba(120, 185, 255, 0.6);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 25;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+  }
+  .fullscreen-btn:hover { background: rgba(80, 170, 255, 0.4); }
+
+  /* Box Notizie Laterale (Sidebar TV) */
+  .tv-side-news {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 260px;
+    max-width: 45%;
+    background: rgba(5, 20, 45, 0.88);
+    border: 1px solid rgba(120, 185, 255, 0.6);
+    border-radius: 10px;
+    padding: 12px;
+    z-index: 15;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    display: none;
+  }
+  .tv-side-news h4 { margin: 0 0 6px; color: #ffd43b; font-size: 0.95rem; text-shadow: 0 0 6px rgba(255,212,59,0.5); }
+  .tv-side-news p { margin: 0; color: #bcd9f7; font-size: 0.85rem; line-height: 1.4; word-break: break-word; }
+
   /* Striscione TG (Lower Third) */
   .tg-banner-wrap {
     margin-top: 12px;
@@ -307,6 +347,16 @@
         <p style="margin:0; font-size:1.05rem; color:#fff;">Clicca per sintonizzarti e attivare l'audio della regia</p>
         <button class="btn" onclick="unlockStudio()">🔊 Entra nello Studio Live</button>
       </div>
+
+      <!-- Box Notizie Laterale (Sidebar TV) -->
+      <div id="tv-side-news" class="tv-side-news">
+        <h4 id="side-news-title">Notizia</h4>
+        <p id="side-news-content">Contenuto...</p>
+      </div>
+
+      <!-- Pulsante Schermo Intero -->
+      <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Schermo intero">⛶ Schermo Intero</button>
+
       <div id="tv-content" class="tv-placeholder">
         <img src="nessunadiretta.png" alt="Nessuna Diretta">
       </div>
@@ -339,10 +389,22 @@
       <button class="btn" style="background: linear-gradient(180deg, #ff922b 0%, #f76707 100%); border-color:#ffd8a8;" onclick="sendTTS()">Fai Parlare</button>
     </div>
 
-    <p style="font-size:0.85rem; color:#8fb4dc; margin: 12px 0 8px;"><strong>2. Striscione Scorrevole:</strong></p>
+    <p style="font-size:0.85rem; color:#8fb4dc; margin: 12px 0 8px;"><strong>2. Striscione Scorrevole (Lower Third):</strong></p>
     <div class="regia-input-row">
       <input type="text" id="regia-banner-input" class="regia-input" placeholder="Scrivi il testo dello striscione...">
       <button class="btn" onclick="updateBanner()">Aggiorna</button>
+    </div>
+
+    <p style="font-size:0.85rem; color:#ffd43b; margin: 12px 0 8px;"><strong>📰 Box Notizie Laterali (Sidebar TV):</strong></p>
+    <div class="regia-input-row">
+      <input type="text" id="regia-side-title" class="regia-input" placeholder="Titolo notizia laterale...">
+    </div>
+    <div class="regia-input-row">
+      <textarea id="regia-side-content" class="regia-textarea" placeholder="Testo approfondimento notizia laterale..."></textarea>
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+      <button class="btn btn-sound" style="flex:1;" onclick="updateSideNews(true)">🟢 Mostra Box Notizie</button>
+      <button class="btn btn-danger" style="flex:1;" onclick="updateSideNews(false)">🔴 Nascondi Box Notizie</button>
     </div>
 
     <p style="font-size:0.85rem; color:#8fb4dc; margin-bottom:8px;"><strong>3. Trasmetti Media in Onda:</strong></p>
@@ -381,7 +443,7 @@
     </p>
   </section>
 
-  <!-- SCHEDINE / RIASSUNTI EDIZIONI PASSATE -->
+  <!-- SCHEDINE / RIASSUNTI EDZIONI PASSATE -->
   <section class="glass">
     <h2 style="margin-top:0; color:#5cc0ff;">📰 Schedine & Riassunti Edizioni Passate</h2>
     <div id="summaries-container">
@@ -438,6 +500,18 @@
   let isCurrentUserMod = false;
   let isCurrentUserBanned = false;
   let currentActiveAudio = null;
+
+  // Gestione Schermo Intero
+  window.toggleFullscreen = function() {
+    const tvScreen = document.getElementById('tv-screen');
+    if (!document.fullscreenElement) {
+      tvScreen.requestFullscreen().catch(err => {
+        console.error("Errore schermo intero:", err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
 
   // Gestione spettatori in tempo reale
   const viewerId = '_' + Math.random().toString(36).substr(2, 9);
@@ -515,6 +589,23 @@
     document.getElementById('regia-banner-input').value = "";
   };
 
+  window.updateSideNews = async function(show) {
+    if (!isCurrentUserMod) return;
+    const title = document.getElementById('regia-side-title').value.trim();
+    const content = document.getElementById('regia-side-content').value.trim();
+
+    if (show && (!title || !content)) {
+      alert("Inserisci sia il titolo che il testo della notizia laterale!");
+      return;
+    }
+
+    await setDoc(regiaRef, {
+      showSideNews: show,
+      sideNewsTitle: title,
+      sideNewsContent: content
+    }, { merge: true });
+  };
+
   window.sendTTS = async function() {
     if (!isCurrentUserMod) return;
     const text = document.getElementById('regia-tts-input').value.trim();
@@ -574,7 +665,7 @@
 
   window.stopBroadcast = async function() {
     if (!isCurrentUserMod) return;
-    await setDoc(regiaRef, { isLive: false, mediaType: "none", mediaUrl: "", mediaTriggeredAt: Date.now() }, { merge: true });
+    await setDoc(regiaRef, { isLive: false, mediaType: "none", mediaUrl: "", mediaTriggeredAt: Date.now(), showSideNews: false }, { merge: true });
   };
 
   window.publishSummary = async function() {
@@ -612,11 +703,13 @@
   onSnapshot(regiaRef, (docSnap) => {
     const tvContent = document.getElementById('tv-content');
     const badge = document.getElementById('status-badge');
+    const sideNewsBox = document.getElementById('tv-side-news');
 
     if (!docSnap.exists()) {
       tvContent.innerHTML = `<img src="nessunadiretta.png" alt="Nessuna Diretta">`;
       badge.textContent = "OFFLINE";
       badge.classList.add('offline');
+      sideNewsBox.style.display = 'none';
       return;
     }
 
@@ -632,6 +725,15 @@
 
     if (data.bannerText) {
       document.getElementById('tg-banner-text').textContent = data.bannerText;
+    }
+
+    // Gestione Box Notizie Laterale
+    if (data.showSideNews && data.sideNewsTitle && data.sideNewsContent) {
+      document.getElementById('side-news-title').textContent = data.sideNewsTitle;
+      document.getElementById('side-news-content').textContent = data.sideNewsContent;
+      sideNewsBox.style.display = 'block';
+    } else {
+      sideNewsBox.style.display = 'none';
     }
 
     if (data.soundFile && data.soundTriggeredAt && data.soundTriggeredAt !== lastSoundTimestamp) {
