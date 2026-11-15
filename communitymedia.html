@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video & Media Community - Zeb89 Fanpage</title>
+<link rel="icon" href="logo.png">
+<link rel="manifest" href="manifest.json">
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    color: #dbeafe;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(80,170,255,.35), transparent 38%),
+      radial-gradient(circle at 90% 35%, rgba(40,120,220,.35), transparent 42%),
+      linear-gradient(160deg, #0a1f3d 0%, #07152b 50%, #030a16 100%);
+    background-attachment: fixed;
+  }
+  .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 18px; }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(120,190,255,.22), rgba(20,50,95,.35));
+    border: 1px solid rgba(140,200,255,.45);
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.6), inset 0 1px 0 rgba(200,230,255,.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+
+  header.glass { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 20px 24px; }
+  
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-small {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid rgba(140,200,255,.7);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(90,180,255,.8);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 8px 16px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 1px solid #6cc0ff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5cc0ff 0%, #1f7fd8 50%, #0d56ad 51%, #2a96e8 100%);
+    box-shadow: 0 0 12px rgba(80,170,255,.6), inset 0 1px 0 rgba(255,255,255,.7);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .btn:active { filter: brightness(.9); transform: scale(0.98); }
+  .btn-danger {
+    background: linear-gradient(180deg, #ff6b6b 0%, #c92a2a 100%);
+    border-color: #ffa8a8;
+    box-shadow: 0 0 10px rgba(255,107,107,.5);
+  }
+
+  /* Form Admin Media */
+  .admin-input, .admin-textarea {
+    width: 100%;
+    background: rgba(5,20,45,0.8);
+    border: 1px solid rgba(120,185,255,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  .admin-input:focus, .admin-textarea:focus { outline: none; border-color: #5cc0ff; }
+  .admin-textarea { resize: vertical; min-height: 70px; }
+
+  /* Card Media */
+  .media-card {
+    background: rgba(5,20,45,.65);
+    border: 1px solid rgba(120,185,255,.35);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .media-card h3 { margin: 0 0 6px; font-size: 1.15rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.5); }
+  .media-card p { margin: 0 0 10px; color: #bcd9f7; font-size: 0.9rem; word-break: break-word; }
+  
+  .media-container {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(120,185,255,0.3);
+  }
+  .media-container img {
+    width: 100%;
+    max-height: 350px;
+    object-fit: cover;
+    display: block;
+  }
+  .media-container iframe {
+    width: 100%;
+    height: 315px;
+    border: none;
+    display: block;
+  }
+
+  footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 10px 0 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="glass">
+    <div class="header-left">
+      <img class="logo-small" src="logo.png" alt="Logo Community Media">
+      <h1>Video & Media Community</h1>
+    </div>
+    <a class="btn" href="index.html">← Torna alla Home</a>
+  </header>
+
+  <!-- Pannello Pubblicazione (Visibile solo ai 3 UID autorizzati) -->
+  <section id="admin-media-section" class="glass" style="display: none; border-color: #ffd43b;">
+    <h2 style="margin-top: 0; color: #ffd43b;">🎛️ Pubblica Contenuto Multimediale</h2>
+    <p style="font-size: 0.85rem; color: #8fb4dc; margin-bottom: 12px;">Inserisci un video YouTube o un'immagine proveniente da Reddit visibile a tutta la community.</p>
+    
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <input type="text" id="media-title" class="admin-input" placeholder="Titolo del video o media...">
+      <textarea id="media-desc" class="admin-textarea" placeholder="Descrizione o commento..."></textarea>
+      <input type="text" id="media-url" class="admin-input" placeholder="Link YouTube o Immagine Reddit (es. https://youtu.be/... o https://i.redd.it/...)">
+      <button class="btn" style="align-self: flex-end; background: linear-gradient(180deg, #ffd43b 0%, #f59f00 100%); border-color:#ffec99; color:#030a16; font-weight:700;" onclick="publishCommunityMedia()">Pubblica Contenuto</button>
+    </div>
+  </section>
+
+  <!-- Feed dei Contenuti -->
+  <div id="community-media-feed">
+    <div class="glass" style="text-align: center;">Caricamento media in corso...</div>
+  </div>
+
+  <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
+
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    deleteDoc,
+    doc, 
+    query, 
+    orderBy, 
+    onSnapshot, 
+    serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHtswW-j0O0tWHHOyJP6QROFvsN_SKHqs",
+    authDomain: "zeb89fanpage-9a3dc.firebaseapp.com",
+    projectId: "zeb89fanpage-9a3dc",
+    storageBucket: "zeb89fanpage-9a3dc.firebasestorage.app",
+    messagingSenderId: "630651020835",
+    appId: "1:630651020835:web:51e425c5e35d782f8e7396",
+    measurementId: "G-578X21KF8L"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // I 3 UID autorizzati
+  const REGIA_UIDS = [
+    "ZP8lYMOoSFUuPVb55I0rXwiqo8a2",
+    "O1JSA1WpzGgI36BWkKA17u3u0uH2",
+    "dpuIezQFvqNNwALmboVIaT6O10X2"
+  ];
+
+  let isUserMod = false;
+
+  onAuthStateChanged(auth, (user) => {
+    const adminMediaSec = document.getElementById('admin-media-section');
+    if (user && REGIA_UIDS.includes(user.uid)) {
+      isUserMod = true;
+      adminMediaSec.style.display = 'block';
+    } else {
+      isUserMod = false;
+      adminMediaSec.style.display = 'none';
+    }
+  });
+
+  function getYouTubeEmbedUrl(url) {
+    if (!url) return null;
+    let videoId = "";
+    if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1]?.split("?")[0];
+    } else if (url.includes("watch?v=")) {
+      videoId = url.split("watch?v=")[1]?.split("&")[0];
+    } else if (url.includes("/embed/")) {
+      videoId = url.split("/embed/")[1]?.split("?")[0];
+    }
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  }
+
+  window.publishCommunityMedia = async function() {
+    if (!isUserMod) return;
+    const title = document.getElementById('media-title').value.trim();
+    const desc = document.getElementById('media-desc').value.trim();
+    const url = document.getElementById('media-url').value.trim();
+
+    if (!title || !url) {
+      alert("Il titolo e il link del media sono obbligatori!");
+      return;
+    }
+
+    let type = "image";
+    let finalUrl = url;
+
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      type = "youtube";
+      finalUrl = getYouTubeEmbedUrl(url);
+      if (!finalUrl) {
+        alert("Link YouTube non valido.");
+        return;
+      }
+    } else if (!url.includes("redd.it") && !url.includes("reddit.com") && !url.endsWith(".mp4")) {
+      alert("Inserisci un link YouTube valido o un'immagine proveniente da Reddit.");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "community_media"), {
+        title,
+        description: desc,
+        mediaType: type,
+        mediaUrl: finalUrl,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById('media-title').value = "";
+      document.getElementById('media-desc').value = "";
+      document.getElementById('media-url').value = "";
+      alert("Contenuto pubblicato con successo!");
+    } catch (e) {
+      alert("Errore nella pubblicazione del media.");
+    }
+  };
+
+  window.deleteCommunityMedia = async function(mediaId) {
+    if (!isUserMod) return;
+    if (confirm("Vuoi eliminare questo contenuto?")) {
+      try {
+        await deleteDoc(doc(db, "community_media", mediaId));
+      } catch (e) {
+        alert("Errore durante l'eliminazione.");
+      }
+    }
+  };
+
+  // Caricamento in tempo reale del feed media
+  const mediaQuery = query(collection(db, "community_media"), orderBy("createdAt", "desc"));
+  onSnapshot(mediaQuery, (snapshot) => {
+    const feedContainer = document.getElementById('community-media-feed');
+    feedContainer.innerHTML = "";
+
+    if (snapshot.empty) {
+      feedContainer.innerHTML = `<div class="glass" style="text-align: center;">Nessun video o media pubblicato al momento.</div>`;
+      return;
+    }
+
+    snapshot.docs.forEach(docSnap => {
+      const item = docSnap.data();
+      const id = docSnap.id;
+
+      let mediaHtml = "";
+      if (item.mediaType === "youtube") {
+        mediaHtml = `<div class="media-container"><iframe src="${escapeHtml(item.mediaUrl)}" allowfullscreen></iframe></div>`;
+      } else {
+        mediaHtml = `<div class="media-container"><img src="${escapeHtml(item.mediaUrl)}" alt="Media Community"></div>`;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'media-card';
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+          <h3>${escapeHtml(item.title)}</h3>
+          ${isUserMod ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.7rem;" onclick="deleteCommunityMedia('${id}')">Elimina</button>` : ''}
+        </div>
+        ${item.description ? `<p>${escapeHtml(item.description)}</p>` : ''}
+        ${mediaHtml}
+      `;
+      feedContainer.appendChild(card);
+    });
+  });
+
+  function escapeHtml(text) {
+    if(!text) return "";
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+</script>
+</body>
+</html>
