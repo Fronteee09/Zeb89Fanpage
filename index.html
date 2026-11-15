@@ -130,7 +130,7 @@
     text-align: left;
   }
   .media-card h3 { margin: 0 0 6px; font-size: 1.15rem; color: #fff; }
-  .media-card p { margin: 0 0 10px; font-size: 0.9rem; word-break: break-word; }
+  .media-card p { margin: 0 0 10px; font-size: 0.9rem; word-break: break-word; color: #bcd9f7; }
   .media-container {
     border-radius: 8px;
     overflow: hidden;
@@ -190,7 +190,7 @@
 
   </div>
 
-  <!-- SEZIONE MEDIA COMMUNITY (Visibile a tutti, caricabile solo dai 3 UID) -->
+  <!-- SEZIONE MEDIA COMMUNITY -->
   <section class="glass" style="text-align: left;">
     <h2 style="text-align: center; margin-top: 0; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6);">🎬 Video e Media della Community</h2>
     <p style="text-align: center; font-size: 0.9rem;">Raccolta di video YouTube e contenuti multimediali selezionati dalla regia.</p>
@@ -244,7 +244,6 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // I 3 UID autorizzati della Regia
   const REGIA_UIDS = [
     "ZP8lYMOoSFUuPVb55I0rXwiqo8a2",
     "O1JSA1WpzGgI36BWkKA17u3u0uH2",
@@ -331,14 +330,13 @@
     }
   };
 
-  // Caricamento in tempo reale del feed media
   const mediaQuery = query(collection(db, "community_media"), orderBy("createdAt", "desc"));
   onSnapshot(mediaQuery, (snapshot) => {
     const feedContainer = document.getElementById('community-media-feed');
     feedContainer.innerHTML = "";
 
     if (snapshot.empty) {
-    feedContainer.innerHTML = `<p style="text-align: center; color: #8fb4dc; font-size: 0.85rem;">Nessun video o media pubblicato al momento.</p>`;
+      feedContainer.innerHTML = `<p style="text-align: center; color: #8fb4dc; font-size: 0.85rem;">Nessun video o media pubblicato al momento.</p>`;
       return;
     }
 
