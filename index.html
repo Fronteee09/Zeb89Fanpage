@@ -74,6 +74,10 @@
     transition: transform 0.1s, filter 0.1s;
   }
   .btn:active { filter: brightness(.9); transform: scale(0.98); }
+  .btn-danger {
+    background: linear-gradient(180deg, #ff6b6b 0%, #c92a2a 100%);
+    border-color: #ffa8a8;
+  }
 
   .nav-buttons {
     display: flex;
@@ -103,6 +107,38 @@
     text-shadow: 0 0 8px rgba(90,180,255,.6);
   }
 
+  /* Form Admin Media e Card Feed */
+  .admin-input, .admin-textarea {
+    width: 100%;
+    background: rgba(5,20,45,0.8);
+    border: 1px solid rgba(120,185,255,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  .admin-input:focus, .admin-textarea:focus { outline: none; border-color: #5cc0ff; }
+  .admin-textarea { resize: vertical; min-height: 70px; }
+
+  .media-card {
+    background: rgba(5,20,45,.65);
+    border: 1px solid rgba(120,185,255,.35);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+    text-align: left;
+  }
+  .media-card h3 { margin: 0 0 6px; font-size: 1.15rem; color: #fff; }
+  .media-card p { margin: 0 0 10px; font-size: 0.9rem; word-break: break-word; }
+  .media-container {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(120,185,255,0.3);
+  }
+  .media-container img { width: 100%; max-height: 350px; object-fit: cover; display: block; }
+  .media-container iframe { width: 100%; height: 315px; border: none; display: block; }
+
   footer { text-align: center; color: #8fb4dc; font-size: .9rem; padding: 20px 0 40px; }
 </style>
 </head>
@@ -122,8 +158,8 @@
     </div>
   </header>
 
-  <!-- Griglia Sezioni -->
-  <div class="grid-section">
+  <!-- Griglia Sezioni Principali -->
+  <div class="grid-section" style="margin-bottom: 18px;">
 
     <!-- Box Telegiornale Live -->
     <div class="glass card-box">
@@ -154,8 +190,187 @@
 
   </div>
 
+  <!-- SEZIONE MEDIA COMMUNITY (Visibile a tutti, caricabile solo dai 3 UID) -->
+  <section class="glass" style="text-align: left;">
+    <h2 style="text-align: center; margin-top: 0; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.6);">🎬 Video e Media della Community</h2>
+    <p style="text-align: center; font-size: 0.9rem;">Raccolta di video YouTube e contenuti multimediali selezionati dalla regia.</p>
+
+    <!-- Pannello Pubblicazione (Visibile solo ai 3 UID autorizzati) -->
+    <div id="admin-media-section" style="display: none; background: rgba(10,30,60,0.6); border: 1px dashed rgba(255,212,59,0.5); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+      <h3 style="margin-top: 0; color: #ffd43b; font-size: 1rem;">🎛️ Pubblica Media (Riservato Regia)</h3>
+      <input type="text" id="media-title" class="admin-input" placeholder="Titolo del video o media...">
+      <textarea id="media-desc" class="admin-textarea" placeholder="Breve descrizione..."></textarea>
+      <input type="text" id="media-url" class="admin-input" placeholder="Link YouTube o Immagine Reddit (es. https://youtu.be/... o https://i.redd.it/...)">
+      <button class="btn" style="background: linear-gradient(180deg, #ffd43b 0%, #f59f00 100%); border-color:#ffec99; color:#030a16; font-weight:700;" onclick="publishCommunityMedia()">Pubblica Contenuto</button>
+    </div>
+
+    <!-- Feed / Lista Media -->
+    <div id="community-media-feed">
+      <p style="text-align: center; color: #8fb4dc; font-size: 0.85rem;">Caricamento media in corso...</p>
+    </div>
+  </section>
+
   <footer>Zeb89 Fanpage · Tutti i diritti riservati</footer>
 
 </div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    deleteDoc,
+    doc, 
+    query, 
+    orderBy, 
+    onSnapshot, 
+    serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHtswW-j0O0tWHHOyJP6QROFvsN_SKHqs",
+    authDomain: "zeb89fanpage-9a3dc.firebaseapp.com",
+    projectId: "zeb89fanpage-9a3dc",
+    storageBucket: "zeb89fanpage-9a3dc.firebasestorage.app",
+    messagingSenderId: "630651020835",
+    appId: "1:630651020835:web:51e425c5e35d782f8e7396",
+    measurementId: "G-578X21KF8L"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // I 3 UID autorizzati della Regia
+  const REGIA_UIDS = [
+    "ZP8lYMOoSFUuPVb55I0rXwiqo8a2",
+    "O1JSA1WpzGgI36BWkKA17u3u0uH2",
+    "dpuIezQFvqNNwALmboVIaT6O10X2"
+  ];
+
+  let isUserMod = false;
+
+  onAuthStateChanged(auth, (user) => {
+    const adminMediaSec = document.getElementById('admin-media-section');
+    if (user && REGIA_UIDS.includes(user.uid)) {
+      isUserMod = true;
+      adminMediaSec.style.display = 'block';
+    } else {
+      isUserMod = false;
+      adminMediaSec.style.display = 'none';
+    }
+  });
+
+  function getYouTubeEmbedUrl(url) {
+    if (!url) return null;
+    let videoId = "";
+    if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1]?.split("?")[0];
+    } else if (url.includes("watch?v=")) {
+      videoId = url.split("watch?v=")[1]?.split("&")[0];
+    } else if (url.includes("/embed/")) {
+      videoId = url.split("/embed/")[1]?.split("?")[0];
+    }
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  }
+
+  window.publishCommunityMedia = async function() {
+    if (!isUserMod) return;
+    const title = document.getElementById('media-title').value.trim();
+    const desc = document.getElementById('media-desc').value.trim();
+    const url = document.getElementById('media-url').value.trim();
+
+    if (!title || !url) {
+      alert("Il titolo e il link del media sono obbligatori!");
+      return;
+    }
+
+    let type = "image";
+    let finalUrl = url;
+
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      type = "youtube";
+      finalUrl = getYouTubeEmbedUrl(url);
+      if (!finalUrl) {
+        alert("Link YouTube non valido.");
+        return;
+      }
+    } else if (!url.includes("redd.it") && !url.includes("reddit.com") && !url.endsWith(".mp4")) {
+      alert("Inserisci un link YouTube valido o un'immagine proveniente da Reddit.");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "community_media"), {
+        title,
+        description: desc,
+        mediaType: type,
+        mediaUrl: finalUrl,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById('media-title').value = "";
+      document.getElementById('media-desc').value = "";
+      document.getElementById('media-url').value = "";
+      alert("Contenuto pubblicato con successo!");
+    } catch (e) {
+      alert("Errore nella pubblicazione del media.");
+    }
+  };
+
+  window.deleteCommunityMedia = async function(mediaId) {
+    if (!isUserMod) return;
+    if (confirm("Vuoi eliminare questo contenuto?")) {
+      try {
+        await deleteDoc(doc(db, "community_media", mediaId));
+      } catch (e) {
+        alert("Errore durante l'eliminazione.");
+      }
+    }
+  };
+
+  // Caricamento in tempo reale del feed media
+  const mediaQuery = query(collection(db, "community_media"), orderBy("createdAt", "desc"));
+  onSnapshot(mediaQuery, (snapshot) => {
+    const feedContainer = document.getElementById('community-media-feed');
+    feedContainer.innerHTML = "";
+
+    if (snapshot.empty) {
+    feedContainer.innerHTML = `<p style="text-align: center; color: #8fb4dc; font-size: 0.85rem;">Nessun video o media pubblicato al momento.</p>`;
+      return;
+    }
+
+    snapshot.docs.forEach(docSnap => {
+      const item = docSnap.data();
+      const id = docSnap.id;
+
+      let mediaHtml = "";
+      if (item.mediaType === "youtube") {
+        mediaHtml = `<div class="media-container"><iframe src="${escapeHtml(item.mediaUrl)}" allowfullscreen></iframe></div>`;
+      } else {
+        mediaHtml = `<div class="media-container"><img src="${escapeHtml(item.mediaUrl)}" alt="Media Community"></div>`;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'media-card';
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+          <h3>${escapeHtml(item.title)}</h3>
+          ${isUserMod ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.7rem;" onclick="deleteCommunityMedia('${id}')">Elimina</button>` : ''}
+        </div>
+        ${item.description ? `<p>${escapeHtml(item.description)}</p>` : ''}
+        ${mediaHtml}
+      `;
+      feedContainer.appendChild(card);
+    });
+  });
+
+  function escapeHtml(text) {
+    if(!text) return "";
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+</script>
 </body>
 </html>
