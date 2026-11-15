@@ -79,7 +79,7 @@
     max-width: 400px;
     margin: 0 auto;
   }
-  .auth-input, .post-input-text, .post-input-textarea {
+  .auth-input, .post-input-text, .post-input-textarea, .post-select {
     width: 100%;
     background: rgba(5,20,45,0.8);
     border: 1px solid rgba(120,185,255,0.3);
@@ -88,10 +88,12 @@
     color: #fff;
     font-size: 0.9rem;
   }
-  .auth-input:focus, .post-input-text:focus, .post-input-textarea:focus {
+  .auth-input:focus, .post-input-text:focus, .post-input-textarea:focus, .post-select:focus {
     outline: none;
     border-color: #5cc0ff;
   }
+  .post-select option { background: #07152b; color: #fff; }
+
   .user-bar {
     display: flex;
     justify-content: space-between;
@@ -112,6 +114,36 @@
   }
   .post-input-textarea { resize: vertical; min-height: 80px; }
 
+  /* Barra di ricerca e Filtri Tag */
+  .search-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .filter-tag-btn {
+    background: rgba(10,30,60,0.6);
+    border: 1px solid rgba(120,185,255,0.3);
+    color: #8fb4dc;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .filter-tag-btn:hover { background: rgba(80,170,255,0.2); color: #fff; }
+  .filter-tag-btn.active {
+    background: #5cc0ff;
+    color: #030a16;
+    border-color: #fff;
+    box-shadow: 0 0 8px rgba(92,192,255,0.6);
+  }
+
   .post-card {
     background: rgba(5,20,45,.65);
     border: 1px solid rgba(120,185,255,.35);
@@ -119,11 +151,24 @@
     padding: 16px;
     margin-bottom: 14px;
   }
-  .post-date { font-size: 0.85rem; color: #8fb4dc; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .post-date { font-size: 0.85rem; color: #8fb4dc; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
   .author-tag { color: #5cc0ff; font-weight: 600; }
   
+  .post-tag-badge {
+    display: inline-block;
+    background: rgba(92,192,255,0.15);
+    border: 1px solid rgba(92,192,255,0.4);
+    color: #5cc0ff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
   .post-title { margin: 0 0 8px; font-size: 1.15rem; color: #fff; }
-  .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.9rem; line-height: 1.4; }
+  .post-content { margin: 0 0 12px; color: #bcd9f7; font-size: 0.9rem; line-height: 1.4; word-break: break-word; }
 
   .post-media {
     margin-bottom: 12px;
@@ -242,7 +287,7 @@
 
   <!-- Sezione Auth -->
   <section id="auth-section" class="glass">
-    <h2 style="text-align: center;">Accesso Community</h2>
+    <h2 style="text-align: center; margin-top:0;">Accesso Community</h2>
     <div class="auth-box">
       <input type="text" id="auth-nickname" class="auth-input" placeholder="Nickname">
       <input type="password" id="auth-password" class="auth-input" placeholder="Password">
@@ -262,14 +307,46 @@
 
   <!-- Form Pubblica Post -->
   <section id="create-post-section" class="glass" style="display: none;">
-    <h2>Crea un nuovo post</h2>
+    <h2 style="margin-top:0;">Crea un nuovo post</h2>
     <div class="create-post-form">
+      <!-- Tag selettore (Visibile solo agli UID autorizzati) -->
+      <select id="post-tag-input" class="post-select" style="display: none;">
+        <option value="generale">💬 Post Generale</option>
+        <option value="annuncio">📢 Annuncio</option>
+        <option value="importante">📌 Importante</option>
+        <option value="madebyus">🛠️ Made By Us</option>
+        <option value="nostalgia">📼 Nostalgia</option>
+        <option value="fiero">🔥 Fiero</option>
+        <option value="memecommunity">🃏 Meme Community</option>
+        <option value="lezzo">🤢 Lezzo</option>
+      </select>
+
       <input type="text" id="post-title-input" class="post-input-text" placeholder="Titolo del post...">
       <textarea id="post-content-input" class="post-input-textarea" placeholder="Corpo del testo..."></textarea>
-      <!-- Campo YouTube visibile solo agli UID autorizzati -->
+      
+      <!-- Campi Media visibili solo agli UID autorizzati -->
       <input type="text" id="post-youtube-input" class="post-input-text" placeholder="Link YouTube (opzionale, es. https://youtu.be/...)" style="display: none;">
-      <input type="text" id="post-reddit-img-input" class="post-input-text" placeholder="Link Immagine Reddit (opzionale, es. https://i.redd.it/...)">
+      <input type="text" id="post-reddit-img-input" class="post-input-text" placeholder="Link Immagine Reddit (opzionale, es. https://i.redd.it/...)" style="display: none;">
+      
       <button class="btn" style="align-self: flex-end;" onclick="publishPost()">Pubblica Post</button>
+    </div>
+  </section>
+
+  <!-- Barra di Ricerca e Filtri Tag -->
+  <section class="glass" style="padding-bottom: 12px;">
+    <div class="search-bar-wrap">
+      <input type="text" id="search-box" class="post-input-text" placeholder="Cerca tra i post per titolo o contenuto..." oninput="applyFilters()">
+      <div class="tag-filters" id="tag-filters-container">
+        <button class="filter-tag-btn active" data-tag="all" onclick="setTagFilter('all', this)">Tutti</button>
+        <button class="filter-tag-btn" data-tag="annuncio" onclick="setTagFilter('annuncio', this)">📢 Annuncio</button>
+        <button class="filter-tag-btn" data-tag="importante" onclick="setTagFilter('importante', this)">📌 Importante</button>
+        <button class="filter-tag-btn" data-tag="madebyus" onclick="setTagFilter('madebyus', this)">🛠️ Made By Us</button>
+        <button class="filter-tag-btn" data-tag="nostalgia" onclick="setTagFilter('nostalgia', this)">📼 Nostalgia</button>
+        <button class="filter-tag-btn" data-tag="fiero" onclick="setTagFilter('fiero', this)">🔥 Fiero</button>
+        <button class="filter-tag-btn" data-tag="memecommunity" onclick="setTagFilter('memecommunity', this)">🃏 Meme Community</button>
+        <button class="filter-tag-btn" data-tag="lezzo" onclick="setTagFilter('lezzo', this)">🤢 Lezzo</button>
+        <button class="filter-tag-btn" data-tag="generale" onclick="setTagFilter('generale', this)">💬 Generale</button>
+      </div>
     </div>
   </section>
 
@@ -329,6 +406,9 @@
     "dpuIezQFvqNNwALmboVIaT6O10X2"
   ];
 
+  let allPostsData = [];
+  let currentSelectedTag = "all";
+
   function nickToEmail(nick) {
     const cleanNick = nick.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
     return `${cleanNick}@zeb89fanpage.local`;
@@ -370,18 +450,26 @@
     const userPanel = document.getElementById('user-panel');
     const createPostSec = document.getElementById('create-post-section');
     const ytInput = document.getElementById('post-youtube-input');
+    const imgInput = document.getElementById('post-reddit-img-input');
+    const tagInput = document.getElementById('post-tag-input');
 
     if (user) {
       authSec.style.display = 'none';
       userPanel.style.display = 'flex';
       createPostSec.style.display = 'block';
-      document.getElementById('current-username').textContent = user.displayName;
+      document.getElementById('current-username').textContent = user.displayName || "Utente";
 
       if (TRUSTED_MEDIA_UIDS.includes(user.uid)) {
         ytInput.style.display = 'block';
+        imgInput.style.display = 'block';
+        tagInput.style.display = 'block';
       } else {
         ytInput.style.display = 'none';
         ytInput.value = "";
+        imgInput.style.display = 'none';
+        imgInput.value = "";
+        tagInput.style.display = 'none';
+        tagInput.value = "generale";
       }
     } else {
       authSec.style.display = 'block';
@@ -397,6 +485,8 @@
       videoId = url.split("youtu.be/")[1]?.split("?")[0];
     } else if (url.includes("watch?v=")) {
       videoId = url.split("watch?v=")[1]?.split("&")[0];
+    } else if (url.includes("/embed/")) {
+      videoId = url.split("/embed/")[1]?.split("?")[0];
     }
     return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
   }
@@ -404,8 +494,9 @@
   window.publishPost = async function() {
     const title = document.getElementById('post-title-input').value.trim();
     const content = document.getElementById('post-content-input').value.trim();
-    const ytUrl = document.getElementById('post-youtube-input').value.trim();
-    const redditImg = document.getElementById('post-reddit-img-input').value.trim();
+    const tagSelect = document.getElementById('post-tag-input');
+    const ytInput = document.getElementById('post-youtube-input');
+    const redditImgInput = document.getElementById('post-reddit-img-input');
 
     if (!title || !content) {
       alert("Il titolo e il corpo del testo sono obbligatori!");
@@ -413,9 +504,16 @@
     }
 
     const isTrusted = TRUSTED_MEDIA_UIDS.includes(auth.currentUser.uid);
-    if (ytUrl && !isTrusted) {
-      alert("Non hai i permessi per pubblicare link video. Puoi inserire solo immagini provenienti da Reddit!");
-      return;
+    const tag = isTrusted ? tagSelect.value : "generale";
+    const ytUrl = isTrusted ? ytInput.value.trim() : "";
+    const redditImg = isTrusted ? redditImgInput.value.trim() : "";
+
+    if (ytUrl) {
+      let embed = getYouTubeEmbedUrl(ytUrl);
+      if (!embed) {
+        alert("Link YouTube non valido.");
+        return;
+      }
     }
 
     if (redditImg && !redditImg.includes("redd.it") && !redditImg.includes("reddit.com")) {
@@ -427,18 +525,19 @@
       await addDoc(collection(db, "posts"), {
         title,
         content,
-        youtubeUrl: isTrusted ? getYouTubeEmbedUrl(ytUrl) : null,
+        tag,
+        youtubeUrl: ytUrl ? getYouTubeEmbedUrl(ytUrl) : null,
         redditImage: redditImg || null,
-        author: auth.currentUser.displayName,
+        author: auth.currentUser.displayName || "Utente",
         uid: auth.currentUser.uid,
         likesCount: 0,
         createdAt: serverTimestamp()
       });
       document.getElementById('post-title-input').value = "";
       document.getElementById('post-content-input').value = "";
-      const ytField = document.getElementById('post-youtube-input');
-      if(ytField) ytField.value = "";
-      document.getElementById('post-reddit-img-input').value = "";
+      if(ytInput) ytInput.value = "";
+      if(redditImgInput) redditImgInput.value = "";
+      if(tagSelect) tagSelect.value = "generale";
     } catch (e) {
       alert("Errore nella pubblicazione del post.");
     }
@@ -467,7 +566,7 @@
     try {
       const likeSnap = await getDoc(likeRef);
       const postSnap = await getDoc(postRef);
-      let currentLikes = postSnap.data().likesCount || 0;
+      let currentLikes = postSnap.exists() ? (postSnap.data().likesCount || 0) : 0;
 
       if (likeSnap.exists()) {
         await deleteDoc(likeRef);
@@ -489,14 +588,14 @@
 
     if (!text) return;
     if (text.includes("http://") || text.includes("https://") || text.includes("www.")) {
-      alert("Nei commenti non è consentito inserire link web o immagini!");
+      alert("Nei commenti non è consentito inserire link web!");
       return;
     }
 
     try {
       await addDoc(collection(db, "posts", postId, "comments"), {
         text,
-        author: auth.currentUser.displayName,
+        author: auth.currentUser.displayName || "Utente",
         uid: auth.currentUser.uid,
         parentId: null,
         createdAt: serverTimestamp()
@@ -524,14 +623,14 @@
 
     if (!text) return;
     if (text.includes("http://") || text.includes("https://") || text.includes("www.")) {
-      alert("Nei commenti non è consentito inserire link web o immagini!");
+      alert("Nei commenti non è consentito inserire link web!");
       return;
     }
 
     try {
       await addDoc(collection(db, "posts", postId, "comments"), {
         text,
-        author: auth.currentUser.displayName,
+        author: auth.currentUser.displayName || "Utente",
         uid: auth.currentUser.uid,
         parentId: parentId,
         createdAt: serverTimestamp()
@@ -551,22 +650,49 @@
     }
   };
 
+  window.setTagFilter = function(tag, btn) {
+    currentSelectedTag = tag;
+    document.querySelectorAll('.filter-tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  };
+
+  window.applyFilters = function() {
+    const searchStr = document.getElementById('search-box').value.toLowerCase();
+    const filtered = allPostsData.filter(post => {
+      const matchesTag = (currentSelectedTag === 'all' || post.tag === currentSelectedTag);
+      const matchesSearch = (post.title.toLowerCase().includes(searchStr) || post.content.toLowerCase().includes(searchStr) || post.author.toLowerCase().includes(searchStr));
+      return matchesTag && matchesSearch;
+    });
+    renderPostsFeed(filtered);
+  };
+
   const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
   onSnapshot(postsQuery, (snapshot) => {
+    allPostsData = [];
+    if (!snapshot.empty) {
+      snapshot.docs.forEach(docSnap => {
+        allPostsData.push({ id: docSnap.id, ...docSnap.data() });
+      });
+    }
+    applyFilters();
+  });
+
+  function renderPostsFeed(posts) {
     const container = document.getElementById('posts-container');
     container.innerHTML = "";
 
-    if (snapshot.empty) {
-      container.innerHTML = `<div class="glass" style="text-align: center;">Nessun post presente.</div>`;
+    if (posts.length === 0) {
+      container.innerHTML = `<div class="glass" style="text-align: center;">Nessun post trovato.</div>`;
       return;
     }
 
-    snapshot.docs.forEach(docSnap => {
-      const post = docSnap.data();
-      const postId = docSnap.id;
+    posts.forEach(post => {
+      const postId = post.id;
       const dateStr = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString("it-IT", { day: 'numeric', month: 'long', year: 'numeric' }) : "Inviando...";
       const canDeletePost = auth.currentUser && (auth.currentUser.uid === post.uid || auth.currentUser.uid === ADMIN_UID);
       const likesCount = post.likesCount || 0;
+      const tagFormatted = post.tag ? post.tag.toUpperCase() : "GENERALE";
 
       let mediaHtml = "";
       if (post.redditImage) {
@@ -580,7 +706,10 @@
       card.className = 'post-card';
       card.innerHTML = `
         <div class="post-date">
-          <span>📅 ${dateStr} — <span class="author-tag">${escapeHtml(post.author)}</span></span>
+          <div>
+            <span class="post-tag-badge">#${tagFormatted}</span>
+            <span>📅 ${dateStr} — <span class="author-tag">${escapeHtml(post.author)}</span></span>
+          </div>
           ${canDeletePost ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deletePost('${postId}')">Elimina Post</button>` : ''}
         </div>
         <div class="post-title"><strong>${escapeHtml(post.title)}</strong></div>
@@ -590,14 +719,14 @@
         <div class="post-footer">
           <button class="comment-toggle-btn" onclick="toggleComments(this)">💬 Mostra commenti</button>
           <button class="vote-btn" id="like-btn-${postId}" onclick="toggleLike('${postId}')">
-            👍︎ <span id="like-count-${postId}">${likesCount}</span>
+            👍 <span id="like-count-${postId}">${likesCount}</span>
           </button>
         </div>
 
         <div class="comments-section">
           <div id="comments-list-${postId}">Caricamento...</div>
           <div class="add-comment-box">
-            <input type="text" class="comment-input" placeholder="Scrivi un commento (senza link)..." onkeydown="if(event.key==='Enter') addFirebaseComment('${postId}', this.nextElementSibling)">
+            <input type="text" class="comment-input" placeholder="Scrivi un commento..." onkeydown="if(event.key==='Enter') addFirebaseComment('${postId}', this.nextElementSibling)">
             <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="addFirebaseComment('${postId}', this)">Invia</button>
           </div>
         </div>
@@ -679,7 +808,7 @@
         }
       });
     });
-  });
+  }
 
   window.toggleComments = function(btn) {
     const card = btn.closest('.post-card');
