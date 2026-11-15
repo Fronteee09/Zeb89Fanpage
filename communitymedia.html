@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ù<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -74,8 +74,8 @@
     box-shadow: 0 0 10px rgba(255,107,107,.5);
   }
 
-  /* Form Admin Media */
-  .admin-input, .admin-textarea {
+  /* Form Admin Media & Inputs */
+  .admin-input, .admin-textarea, .admin-select {
     width: 100%;
     background: rgba(5,20,45,0.8);
     border: 1px solid rgba(120,185,255,0.3);
@@ -85,10 +85,42 @@
     font-size: 0.9rem;
     margin-bottom: 10px;
   }
-  .admin-input:focus, .admin-textarea:focus { outline: none; border-color: #5cc0ff; }
+  .admin-input:focus, .admin-textarea:focus, .admin-select:focus { outline: none; border-color: #5cc0ff; }
   .admin-textarea { resize: vertical; min-height: 70px; }
+  .admin-select option { background: #07152b; color: #fff; }
 
-  /* Card Media */
+  /* Barra di ricerca e Filtri Tag */
+  .search-bar-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .filter-tag-btn {
+    background: rgba(10,30,60,0.6);
+    border: 1px solid rgba(120,185,255,0.3);
+    color: #8fb4dc;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .filter-tag-btn:hover { background: rgba(80,170,255,0.2); color: #fff; }
+  .filter-tag-btn.active {
+    background: #5cc0ff;
+    color: #030a16;
+    border-color: #fff;
+    box-shadow: 0 0 8px rgba(92,192,255,0.6);
+  }
+
+  /* Card Media & Tag Badge */
   .media-card {
     background: rgba(5,20,45,.65);
     border: 1px solid rgba(120,185,255,.35);
@@ -99,6 +131,19 @@
   .media-card h3 { margin: 0 0 6px; font-size: 1.15rem; color: #fff; text-shadow: 0 0 8px rgba(90,180,255,.5); }
   .media-card p { margin: 0 0 10px; color: #bcd9f7; font-size: 0.9rem; word-break: break-word; }
   
+  .post-tag-badge {
+    display: inline-block;
+    background: rgba(92,192,255,0.15);
+    border: 1px solid rgba(92,192,255,0.4);
+    color: #5cc0ff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
   .media-container {
     border-radius: 8px;
     overflow: hidden;
@@ -134,13 +179,39 @@
   <!-- Pannello Pubblicazione (Visibile solo ai 3 UID autorizzati) -->
   <section id="admin-media-section" class="glass" style="display: none; border-color: #ffd43b;">
     <h2 style="margin-top: 0; color: #ffd43b;">🎛️ Pubblica Contenuto Multimediale</h2>
-    <p style="font-size: 0.85rem; color: #8fb4dc; margin-bottom: 12px;">Inserisci un video YouTube o un'immagine proveniente da Reddit visibile a tutta la community.</p>
+    <p style="font-size: 0.85rem; color: #8fb4dc; margin-bottom: 12px;">Seleziona un tag e inserisci il contenuto multimediale.</p>
     
     <div style="display: flex; flex-direction: column; gap: 4px;">
+      <select id="media-tag" class="admin-select">
+        <option value="importante">📌 Importante</option>
+        <option value="nostalgia">📼 Nostalgia</option>
+        <option value="fiero">🔥 Fiero</option>
+        <option value="memecommunity">🃏 Meme Community</option>
+        <option value="lezzo">🤢 Lezzo</option>
+        <option value="annuncio">📢 Annuncio</option>
+        <option value="madebyus">🛠️ Made By Us</option>
+      </select>
       <input type="text" id="media-title" class="admin-input" placeholder="Titolo del video o media...">
       <textarea id="media-desc" class="admin-textarea" placeholder="Descrizione o commento..."></textarea>
       <input type="text" id="media-url" class="admin-input" placeholder="Link YouTube o Immagine Reddit (es. https://youtu.be/... o https://i.redd.it/...)">
       <button class="btn" style="align-self: flex-end; background: linear-gradient(180deg, #ffd43b 0%, #f59f00 100%); border-color:#ffec99; color:#030a16; font-weight:700;" onclick="publishCommunityMedia()">Pubblica Contenuto</button>
+    </div>
+  </section>
+
+  <!-- Barra di Ricerca e Filtri Tag -->
+  <section class="glass" style="padding-bottom: 12px;">
+    <div class="search-bar-wrap">
+      <input type="text" id="search-box" class="admin-input" style="margin-bottom:0;" placeholder="Cerca tra i media..." oninput="applyFilters()">
+      <div class="tag-filters" id="tag-filters-container">
+        <button class="filter-tag-btn active" data-tag="all" onclick="setTagFilter('all', this)">Tutti</button>
+        <button class="filter-tag-btn" data-tag="importante" onclick="setTagFilter('importante', this)">📌 Importante</button>
+        <button class="filter-tag-btn" data-tag="nostalgia" onclick="setTagFilter('nostalgia', this)">📼 Nostalgia</button>
+        <button class="filter-tag-btn" data-tag="fiero" onclick="setTagFilter('fiero', this)">🔥 Fiero</button>
+        <button class="filter-tag-btn" data-tag="memecommunity" onclick="setTagFilter('memecommunity', this)">🃏 Meme Community</button>
+        <button class="filter-tag-btn" data-tag="lezzo" onclick="setTagFilter('lezzo', this)">🤢 Lezzo</button>
+        <button class="filter-tag-btn" data-tag="annuncio" onclick="setTagFilter('annuncio', this)">📢 Annuncio</button>
+        <button class="filter-tag-btn" data-tag="madebyus" onclick="setTagFilter('madebyus', this)">🛠️ Made By Us</button>
+      </div>
     </div>
   </section>
 
@@ -183,7 +254,6 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // I 3 UID autorizzati
   const REGIA_UIDS = [
     "ZP8lYMOoSFUuPVb55I0rXwiqo8a2",
     "O1JSA1WpzGgI36BWkKA17u3u0uH2",
@@ -191,6 +261,8 @@
   ];
 
   let isUserMod = false;
+  let allMediaData = [];
+  let currentSelectedTag = "all";
 
   onAuthStateChanged(auth, (user) => {
     const adminMediaSec = document.getElementById('admin-media-section');
@@ -218,6 +290,7 @@
 
   window.publishCommunityMedia = async function() {
     if (!isUserMod) return;
+    const tag = document.getElementById('media-tag').value;
     const title = document.getElementById('media-title').value.trim();
     const desc = document.getElementById('media-desc').value.trim();
     const url = document.getElementById('media-url').value.trim();
@@ -244,6 +317,7 @@
 
     try {
       await addDoc(collection(db, "community_media"), {
+        tag,
         title,
         description: desc,
         mediaType: type,
@@ -270,21 +344,46 @@
     }
   };
 
-  // Caricamento in tempo reale del feed media
+  window.setTagFilter = function(tag, btn) {
+    currentSelectedTag = tag;
+    document.querySelectorAll('.filter-tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  };
+
+  window.applyFilters = function() {
+    const searchStr = document.getElementById('search-box').value.toLowerCase();
+    const filtered = allMediaData.filter(item => {
+      const matchesTag = (currentSelectedTag === 'all' || item.tag === currentSelectedTag);
+      const matchesSearch = (item.title.toLowerCase().includes(searchStr) || (item.description && item.description.toLowerCase().includes(searchStr)));
+      return matchesTag && matchesSearch;
+    });
+    renderMediaFeed(filtered);
+  };
+
   const mediaQuery = query(collection(db, "community_media"), orderBy("createdAt", "desc"));
   onSnapshot(mediaQuery, (snapshot) => {
+    allMediaData = [];
+    if (snapshot.empty) {
+      allMediaData = [];
+    } else {
+      snapshot.docs.forEach(docSnap => {
+        allMediaData.push({ id: docSnap.id, ...docSnap.data() });
+      });
+    }
+    applyFilters();
+  });
+
+  function renderMediaFeed(items) {
     const feedContainer = document.getElementById('community-media-feed');
     feedContainer.innerHTML = "";
 
-    if (snapshot.empty) {
-      feedContainer.innerHTML = `<div class="glass" style="text-align: center;">Nessun video o media pubblicato al momento.</div>`;
+    if (items.length === 0) {
+      feedContainer.innerHTML = `<div class="glass" style="text-align: center;">Nessun contenuto trovato.</div>`;
       return;
     }
 
-    snapshot.docs.forEach(docSnap => {
-      const item = docSnap.data();
-      const id = docSnap.id;
-
+    items.forEach(item => {
       let mediaHtml = "";
       if (item.mediaType === "youtube") {
         mediaHtml = `<div class="media-container"><iframe src="${escapeHtml(item.mediaUrl)}" allowfullscreen></iframe></div>`;
@@ -292,19 +391,24 @@
         mediaHtml = `<div class="media-container"><img src="${escapeHtml(item.mediaUrl)}" alt="Media Community"></div>`;
       }
 
+      const tagFormatted = item.tag ? item.tag.toUpperCase() : "GENERAL";
+
       const card = document.createElement('div');
       card.className = 'media-card';
       card.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-          <h3>${escapeHtml(item.title)}</h3>
-          ${isUserMod ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.7rem;" onclick="deleteCommunityMedia('${id}')">Elimina</button>` : ''}
+          <div>
+            <span class="post-tag-badge">#${tagFormatted}</span>
+            <h3>${escapeHtml(item.title)}</h3>
+          </div>
+          ${isUserMod ? `<button class="btn btn-danger" style="padding: 2px 8px; font-size: 0.7rem;" onclick="deleteCommunityMedia('${item.id}')">Elimina</button>` : ''}
         </div>
         ${item.description ? `<p>${escapeHtml(item.description)}</p>` : ''}
         ${mediaHtml}
       `;
       feedContainer.appendChild(card);
     });
-  });
+  }
 
   function escapeHtml(text) {
     if(!text) return "";
